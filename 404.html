@@ -1,0 +1,111 @@
+<!-- TITLE: 404.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Page Not Found</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        .error-page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .error-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .error-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px 60px;
+        }
+
+        .error-card-box {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 32px;
+            padding: 45px 30px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .error-digit {
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--primary);
+            letter-spacing: -3px;
+            margin-bottom: 10px;
+        }
+
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .error-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .error-actions-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body class="error-page-wrapper">
+
+    <!-- MASTER HEADER -->
+    <header class="error-header">
+        <a href="index.html" class="brand-nav-btn" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <img src="assets/images/reflo-icon.png" alt="REFLO" style="height: 28px; width: 28px; object-fit: contain;">
+            <span style="font-weight: 900; color: var(--primary); font-size: 1.15rem;">REFLO</span>
+        </a>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="error-main">
+        <div class="error-card-box">
+            <div class="error-digit">404</div>
+            <h1 class="error-title">Page Not Found</h1>
+            <p class="error-desc">The link you opened is invalid, expired, or has been moved to another destination.</p>
+            
+            <div class="error-actions-row">
+                <a href="index.html" class="btn-primary" style="padding: 14px; text-decoration: none;">
+                    Return to Home
+                </a>
+                <button type="button" class="btn-outline" style="padding: 12px;" onclick="history.back()">
+                    ← Go Back
+                </button>
+            </div>
+        </div>
+    </main>
+<script src="assets/js/network-listener.js"></script>
+    <script src="assets/js/theme.js"></script>
+</body>
+</html>

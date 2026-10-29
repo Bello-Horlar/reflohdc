@@ -1,0 +1,517 @@
+<!-- TITLE: app/bookings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Booking</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .bookings-page-container {
+            padding: 0 25px 100px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* Filter Tabs Strip */
+        .filter-scroll-strip {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+        }
+        .filter-scroll-strip::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.8rem;
+            font-weight: 800;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            color: #ffffff !important;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        /* Booking Cards */
+        .booking-card-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            padding: 22px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+
+        .booking-card-item:active {
+            transform: scale(0.99);
+        }
+
+        .bk-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .bk-customer-name {
+            font-size: 1.15rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 3px;
+        }
+
+        .bk-service-tag {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .bk-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: var(--bg-body);
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .bk-meta-item small {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .bk-meta-item strong {
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .status-confirmed { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .status-completed { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .status-cancelled { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        /* Action Buttons Grid */
+        .bk-actions-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action-sm {
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            transition: all 0.15s ease;
+        }
+        .btn-action-sm:active { transform: scale(0.95); }
+
+        .btn-action-confirm {
+            background: #22c55e !important;
+            color: #ffffff !important;
+            border: none;
+        }
+
+        .btn-action-complete {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+        }
+
+        .btn-action-cancel {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 440px;
+            border-radius: 28px;
+            padding: 30px 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        /* -------------------------------------------------------------
+           DEDICATED FULL MEDIA INSPECTOR MODAL & GALLERY
+        ------------------------------------------------------------- */
+        .gallery-modal-box {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 680px;
+            border-radius: 28px;
+            padding: 20px 22px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 94vh;
+            overflow: hidden;
+        }
+
+        .gallery-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .gallery-badge-title {
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gallery-nav-arrows {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-gallery-nav {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-gallery-nav:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .btn-gallery-nav:active:not(:disabled) {
+            transform: scale(0.92);
+        }
+
+        /* Main Display Stage */
+        .gallery-stage-viewport {
+            width: 100%;
+            height: 48vh;
+            min-height: 280px;
+            max-height: 440px;
+            background: #060911;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .gallery-display-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            user-select: none;
+            -webkit-user-drag: none;
+            transform-origin: center center;
+            transition: transform 0.05s ease-out;
+            cursor: grab;
+            display: block;
+        }
+
+        .gallery-display-img.is-dragging {
+            cursor: grabbing !important;
+        }
+
+        .gallery-video-element {
+            width: 100%;
+            height: 100%;
+            max-height: 440px;
+            object-fit: contain;
+            background: #000;
+            outline: none;
+            border-radius: 18px;
+        }
+
+        /* Zoom Toolbar */
+        .gallery-zoom-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            background: var(--bg-body);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .gallery-zoom-slider {
+            flex: 1;
+            height: 6px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn-zoom-step {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-zoom-step:active { transform: scale(0.92); }
+
+        /* Thumbnail Switcher Bar */
+        .gallery-thumbs-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 6px 2px;
+            scrollbar-width: none;
+        }
+        .gallery-thumbs-strip::-webkit-scrollbar { display: none; }
+
+        .gallery-thumb-item {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            flex-shrink: 0;
+            background: var(--bg-card);
+            position: relative;
+            transition: all 0.15s ease;
+            opacity: 0.55;
+        }
+        .gallery-thumb-item.active {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4);
+            opacity: 1 !important;
+            transform: scale(1.05);
+        }
+        .gallery-thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .gallery-thumb-item.video-thumb {
+            background: #0f172a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <!-- MASTER HEADER -->
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='dashboard.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">🌓</button>
+    </header>
+
+    <main class="bookings-page-container">
+        <!-- TITLE SECTION -->
+        <div class="master-page-title" style="padding: 25px 0 15px;">
+            <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;">Booking Management</h1>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Confirm, reschedule, complete, and contact client appointments</p>
+        </div>
+
+        <!-- FILTER STRIP -->
+        <div class="filter-scroll-strip">
+            <button class="filter-pill active" data-filter="all" onclick="BookingsApp.setFilter('all', this)">All Bookings</button>
+            <button class="filter-pill" data-filter="pending" onclick="BookingsApp.setFilter('pending', this)">Pending ⏳</button>
+            <button class="filter-pill" data-filter="upcoming" onclick="BookingsApp.setFilter('upcoming', this)">Confirmed / Upcoming 📅</button>
+            <button class="filter-pill" data-filter="completed" onclick="BookingsApp.setFilter('completed', this)">Completed ✓</button>
+            <button class="filter-pill" data-filter="cancelled" onclick="BookingsApp.setFilter('cancelled', this)">Cancelled ✕</button>
+        </div>
+
+        <!-- LIVE BOOKING FEED -->
+        <div id="bookings-feed-list">
+            <div class="skeleton-item-long" style="height: 140px; border-radius: 26px; margin-bottom: 16px;"></div>
+            <div class="skeleton-item-long" style="height: 140px; border-radius: 26px;"></div>
+        </div>
+
+        <!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 40px;">Quick Navigation</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏠</i><span>Home</span></a>
+                <a href="feedback.html" class="nav-shortcut"><i>⭐</i><span>Reviews</span></a>
+                <a href="analytics.html" class="nav-shortcut"><i>📊</i><span>Analytics</span></a>
+                <a href="subscription.html" class="nav-shortcut"><i>💳</i><span>Plans</span></a>
+                <a href="share.html" class="nav-shortcut"><i>🔳</i><span>QR Hub</span></a>
+                <a href="profile.html" class="nav-shortcut"><i>⚙️</i><span>Profile</span></a>
+            </div>
+        </div>
+    </main>
+
+    <!-- RESCHEDULE MODAL -->
+    <div class="modal-overlay" id="rescheduleModal">
+        <div class="modal-box">
+            <h2 style="font-weight: 900; margin-bottom: 5px; font-size: 1.3rem;">Reschedule Booking</h2>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 20px;" id="rescheduleCustomerName">Update appointment schedule</p>
+            
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">NEW DATE</label>
+                <input type="date" id="rescheduleDateInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main);" required>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label style="font-size: 0.75rem; font-weight: 800; color: var(--text-muted);">NEW TIME</label>
+                <input type="time" id="rescheduleTimeInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main);" required>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-outline" style="flex: 1; padding: 12px;" onclick="BookingsApp.closeRescheduleModal()">Cancel</button>
+                <button type="button" class="btn-primary" style="flex: 2; padding: 12px;" onclick="BookingsApp.saveReschedule()">Save & Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT CUSTOMER MODAL -->
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-box text-center">
+            <h2 style="font-weight: 900; margin-bottom: 5px; font-size: 1.3rem;" id="contactModalTitle">Contact Customer</h2>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 25px;" id="contactModalSubtitle">Choose communication method</p>
+
+            <div id="contactOptionsGrid" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                <!-- Dynamically injected Call, WhatsApp, Email links -->
+            </div>
+
+            <button type="button" class="btn-outline" style="width: 100%; padding: 12px;" onclick="BookingsApp.closeContactModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- DEDICATED FULL MEDIA INSPECTOR GALLERY MODAL -->
+    <div class="modal-overlay" id="mediaViewerModal">
+        <div class="gallery-modal-box">
+            <!-- Top Controls Bar -->
+            <div class="gallery-top-bar">
+                <div class="gallery-badge-title">
+                    <span id="galleryTypeIcon">📷</span>
+                    <span id="galleryCounterLabel">Attachment 1 of 1</span>
+                </div>
+                <div class="gallery-nav-arrows">
+                    <button type="button" class="btn-gallery-nav" id="btnPrevMedia" onclick="BookingsApp.prevMedia()" title="Previous Image">❮ Prev</button>
+                    <button type="button" class="btn-gallery-nav" id="btnNextMedia" onclick="BookingsApp.nextMedia()" title="Next Image">Next ❯</button>
+                    <a id="btnOpenFullRes" href="#" target="_blank" rel="noopener" class="btn-gallery-nav" style="text-decoration:none;" title="Open original file">↗ Full</a>
+                    <button type="button" class="btn-gallery-nav" onclick="BookingsApp.closeMediaViewer()" style="color:#ef4444; font-weight:900;">✕</button>
+                </div>
+            </div>
+
+            <!-- Active Display Viewport Stage -->
+            <div class="gallery-stage-viewport" id="galleryStage">
+                <!-- Dynamically injected full Image or Video element -->
+            </div>
+
+            <!-- Zoom & Pan Controls (Shown for Photos) -->
+            <div class="gallery-zoom-bar" id="galleryZoomControls">
+                <button type="button" class="btn-zoom-step" id="btnZoomOut" onclick="BookingsApp.stepZoom(-0.35)" title="Zoom Out">−</button>
+                <input type="range" class="gallery-zoom-slider" id="galleryZoomSlider" min="1" max="3.5" step="0.05" value="1" title="Drag to Zoom In/Out">
+                <button type="button" class="btn-zoom-step" id="btnZoomIn" onclick="BookingsApp.stepZoom(0.35)" title="Zoom In">+</button>
+                <button type="button" class="btn-zoom-step" id="btnZoomReset" onclick="BookingsApp.resetZoom()" title="Reset Zoom" style="font-size:0.8rem;">↺</button>
+                <span id="galleryZoomText" style="font-size:0.75rem; font-weight:900; width:36px; text-align:right;">1.0x</span>
+            </div>
+
+            <!-- Bottom Thumbnails Strip (Instant Switcher) -->
+            <div>
+                <small style="display:block; font-size:0.65rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">
+                    Tap any attachment to inspect:
+                </small>
+                <div class="gallery-thumbs-strip" id="galleryThumbsRow">
+                    <!-- Clickable Thumbnails for direct switching -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/notifications.js"></script>
+    <script src="../assets/js/user/Bookings.js"></script>
+    <!-- TRIAL & PLAN ENTITLEMENT GATE -->
+    <script src="../assets/js/trial-gate.js"></script>
+</body>
+</html>

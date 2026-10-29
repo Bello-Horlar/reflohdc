@@ -1,0 +1,172 @@
+<!-- TITLE: app/analytics.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | analytics</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .analytics-container { padding: 0 25px 100px; }
+        
+        /* Summary Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .metric-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+        .metric-card label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .metric-card .value { font-size: 1.5rem; font-weight: 900; margin-top: 5px; display: block; }
+
+        /* Chart Visualization Areas */
+        .chart-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .chart-header h3 { font-size: 1rem; font-weight: 800; }
+
+        /* Plan Gating UI */
+        .locked-feature {
+            position: relative;
+            filter: blur(2px);
+            pointer-events: none;
+            user-select: none;
+        }
+        .upgrade-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: 28px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Distribution Bars */
+        .dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .dist-label { font-size: 0.8rem; font-weight: 700; width: 30px; }
+        .dist-bar-bg { flex: 1; height: 10px; background: var(--bg-body); border-radius: 10px; overflow: hidden; }
+        .dist-bar-fill { height: 100%; background: var(--primary); border-radius: 10px; width: 0%; transition: width 1s ease; }
+        
+        .empty-state-msg {
+            padding: 40px 20px;
+            text-align: center;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='dashboard.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">🌓</button>
+    </header>
+
+    <main class="analytics-container">
+        <!-- TITLE SECTION -->
+        <div class="master-page-title" style="padding: 25px 0;">
+            <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;">Performance Insights</h1>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;" id="plan-status">Loading account data...</p>
+        </div>
+
+        <div id="analytics-content">
+            <!-- 1. TOP METRICS -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <label>Avg. Rating</label>
+                    <span class="value" id="val-avg-rating">--</span>
+                </div>
+                <div class="metric-card">
+                    <label>Resolution</label>
+                    <span class="value" id="val-resolution">--%</span>
+                </div>
+                <div class="metric-card">
+                    <label>Reviews</label>
+                    <span class="value" id="val-total-reviews">--</span>
+                </div>
+                <div class="metric-card">
+                    <label>Bookings</label>
+                    <span class="value" id="val-total-bookings">--</span>
+                </div>
+            </div>
+
+            <!-- 2. RATING DISTRIBUTION (Basic) -->
+            <section class="chart-section">
+                <div class="chart-header">
+                    <h3>Rating Distribution</h3>
+                </div>
+                <div id="distribution-ui">
+                    <div class="dist-row"><span class="dist-label">5 ★</span><div class="dist-bar-bg"><div id="bar-5" class="dist-bar-fill"></div></div></div>
+                    <div class="dist-row"><span class="dist-label">4 ★</span><div class="dist-bar-bg"><div id="bar-4" class="dist-bar-fill"></div></div></div>
+                    <div class="dist-row"><span class="dist-label">3 ★</span><div class="dist-bar-bg"><div id="bar-3" class="dist-bar-fill"></div></div></div>
+                    <div class="dist-row"><span class="dist-label">2 ★</span><div class="dist-bar-bg"><div id="bar-2" class="dist-bar-fill"></div></div></div>
+                    <div class="dist-row"><span class="dist-label">1 ★</span><div class="dist-bar-bg"><div id="bar-1" class="dist-bar-fill"></div></div></div>
+                </div>
+            </section>
+
+            <!-- 3. TRENDS (Growth/Pro Only) -->
+            <div id="advanced-stats-container">
+                <section class="chart-section" id="trends-chart">
+                    <div class="chart-header">
+                        <h3>Volume Trends</h3>
+                        <span class="badge" style="background: var(--primary); color: white;">GROWTH FEATURE</span>
+                    </div>
+                    <div style="height: 150px; display: flex; align-items: flex-end; gap: 8px;" id="trend-bars">
+                        <!-- Bars generated by JS -->
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 40px;">Quick Navigation</div>
+        <div class="settings-card" style="border-radius: 28px; padding: 25px 15px; margin-bottom: 50px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                <a href="dashboard.html" style="text-decoration: none; color: var(--text-main);"><i>🏠</i><br><span style="font-size: 0.65rem; font-weight: 800;">HOME</span></a>
+                <a href="feedback.html" style="text-decoration: none; color: var(--text-main);"><i>⭐</i><br><span style="font-size: 0.65rem; font-weight: 800;">REVIEWS</span></a>
+                <a href="bookings.html" style="text-decoration: none; color: var(--text-main);"><i>📅</i><br><span style="font-size: 0.65rem; font-weight: 800;">BOOKINGS</span></a>
+            </div>
+        </div>
+    </main>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- LOADING STATE OVERLAY -->
+    <div id="loading-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); z-index: 3000; display: flex; align-items: center; justify-content: center; font-weight: 900;">
+        LOADING ANALYTICS...
+    </div>
+
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/user/Analytics.js"></script>
+    <!-- TRIAL & PLAN ENTITLEMENT GATE -->
+    <script src="../assets/js/trial-gate.js"></script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+/* TITLE: assets/css/main.css */
+
+/* ==========================================================================
+   1. MASTER THEME ENGINE & CSS VARIABLES (Global & Aliased)
+   ========================================================================== */
+:root {
+    /* Brand Primary Palette */
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-soft: rgba(37, 99, 235, 0.12);
+    --on-primary: #ffffff; /* Always White text for buttons */
+
+    /* Aliases for backwards compatibility */
+    --p: var(--primary);
+    --p-hover: var(--primary-hover);
+    --p-soft: var(--primary-soft);
+
+    /* Light Mode: Crisp Slate Background & Pure White Cards */
+    --bg-body: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+
+    /* Aliases */
+    --bg: var(--bg-body);
+    --card: var(--bg-card);
+    --text: var(--text-main);
+    --text-m: var(--text-muted);
+
+    /* Semantic Status Colors */
+    --success: #22c55e;
+    --safe: #22c55e;
+    --warning: #f59e0b;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --error: #ef4444;
+
+    /* Admin Master Palette (Distinct Indigo/Purple) */
+    --adm-primary: #6366f1;
+    --adm-primary-hover: #4f46e5;
+    --adm-gradient: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+    --adm-dark: #0f172a;
+
+    /* Elevation & Glassmorphism */
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --header-h: 70px;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+    /* Dark Mode: Deep Navy Background & High-Contrast Cards */
+    --bg-body: #0f172a;
+    --bg-card: #1e293b;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+
+    /* Aliases */
+    --bg: var(--bg-body);
+    --card: var(--bg-card);
+    --text: var(--text-main);
+    --text-m: var(--text-muted);
+
+    --header-bg: rgba(15, 23, 42, 0.85);
+    --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35);
+    --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   2. CORE RESET & BASE STYLES
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.55;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ==========================================================================
+   3. MASTER HEADERS (Distant Layout & Functional Nav)
+   ========================================================================== */
+.master-header,
+.app-header,
+.landing-header,
+.public-hub-header,
+.public-page-header,
+.public-success-header,
+.login-header,
+.register-header,
+.auth-header,
+.legal-header,
+.error-header,
+.dash-header {
+    width: 100%;
+    height: var(--header-h);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(12px);
+}
+
+.admin-master-header {
+    background: #0f172a !important;
+    border-bottom-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+.brand-nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary);
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    padding: 0;
+    text-decoration: none;
+}
+
+.brand-nav-btn span {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.title-back-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 0 6px 0 0;
+    display: flex;
+    align-items: center;
+    transition: transform 0.15s;
+}
+.title-back-btn:active { transform: scale(0.88); }
+
+.theme-toggle,
+.theme-toggle-btn,
+.theme-btn {
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+    outline: none;
+}
+.theme-toggle:active,
+.theme-btn:active { transform: scale(0.9); }
+
+/* ==========================================================================
+   4. UNBREAKABLE MASTER BUTTONS & INPUT CONTROLS (Fix for Issue 10)
+   ========================================================================== */
+.btn,
+.btn-primary,
+.btn-reflo-primary,
+.btn-reflo-cta,
+.btn-login-submit,
+.btn-register-submit,
+.btn-booking-submit,
+.btn-review-submit,
+.btn-auth-submit,
+.btn-google-action {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background-color: #2563eb !important; /* Constant Blue */
+    color: #ffffff !important;           /* Always White Text */
+    border: none;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover,
+.btn-reflo-primary:hover,
+.btn-reflo-cta:hover {
+    background-color: #1d4ed8 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+.btn-primary:active,
+.btn-reflo-primary:active,
+.btn-reflo-cta:active {
+    transform: scale(0.98);
+}
+
+.btn-primary:disabled,
+.btn-reflo-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-outline {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    color: var(--text-main);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+.btn-outline:hover {
+    background: var(--bg-card);
+    border-color: var(--text-main);
+}
+.btn-outline:active { transform: scale(0.98); }
+
+/* Inputs & Form Controls (Fixed Dark Mode Contrast - Issue 10) */
+input, select, textarea,
+.form-input-box,
+.onboard-input-box,
+.input-box-field,
+.input-master,
+.log-input-field,
+.reg-input-field,
+.auth-input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    font-size: 0.95rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+input:focus, select:focus, textarea:focus,
+.form-input-box:focus,
+.onboard-input-box:focus,
+.input-box-field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* ==========================================================================
+   5. GATEWAY CARDS & FACEBOOK-STYLE BADGES (Fix for Issue 8)
+   ========================================================================== */
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 28px 0 12px 4px;
+    display: block;
+}
+
+.action-cards-grid-3,
+.gateway-grid,
+.nav-grid-3,
+.action-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 480px) {
+    .action-cards-grid-3,
+    .gateway-grid,
+    .nav-grid-3 {
+        gap: 8px;
+    }
+}
+
+.gateway-action-card,
+.gateway-card,
+.action-card,
+.nav-shortcut {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: 22px;
+    padding: 22px 10px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+}
+
+.gateway-action-card:hover,
+.gateway-card:hover,
+.nav-shortcut:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+}
+
+.gateway-action-card:active,
+.gateway-card:active,
+.nav-shortcut:active {
+    transform: scale(0.94);
+    background: var(--bg-body);
+}
+
+.gateway-action-card i,
+.gateway-card i,
+.action-card i,
+.nav-shortcut i {
+    font-size: 2rem;
+    font-style: normal;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.gateway-action-card span,
+.gateway-card span,
+.action-card span,
+.nav-shortcut span {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    color: var(--text-main);
+}
+
+/* Facebook-Style Floating Red Counter Badge on Cards */
+.card-counter-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+    border: 2px solid var(--bg-card);
+    display: none;
+    line-height: 1.2;
+}
+
+.nav-utility-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 28px !important;
+    padding: 24px 16px !important;
+    box-shadow: var(--shadow);
+    margin-bottom: 40px;
+}
+
+/* ==========================================================================
+   6. METRICS, STATS & HERO CARDS
+   ========================================================================== */
+.card,
+.settings-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.stats-2x2-grid,
+.metrics-grid,
+.stats-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-metric-card,
+.metric-card,
+.mini-stat {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+}
+
+.stat-metric-card label,
+.metric-card label,
+.mini-stat label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+}
+
+.stat-metric-card .value,
+.stat-metric-card .stat-val,
+.metric-card .value,
+.mini-stat .val {
+    font-size: 1.55rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    display: block;
+}
+
+/* Authoritative Countdown Banner */
+.trial-countdown-banner,
+.global-banner {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #ffffff;
+    border-radius: 24px;
+    padding: 20px 24px;
+    margin: 20px 0 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.trial-countdown-banner.urgent {
+    background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%);
+}
+
+.trial-countdown-banner.expired {
+    background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+}
+
+.btn-banner-upgrade {
+    background: #ffffff !important;
+    color: #1e3a8a !important;
+    font-size: 0.8rem;
+    font-weight: 900;
+    padding: 10px 18px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   7. STATUS BADGES & LIVE FEED ROWS
+   ========================================================================== */
+.status-badge,
+.badge-status,
+.status-tag,
+.status-pill,
+.badge {
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    display: inline-block;
+}
+
+.status-trial, .badge-trial { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+.status-starter, .badge-starter { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.status-growth, .badge-growth { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+.status-pro, .badge-pro { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.status-open, .status-active { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.status-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.status-completed { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.status-expired, .status-cancelled { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.status-suspended, .badge-suspended { background: rgba(220, 38, 38, 0.25); color: #dc2626; }
+
+/* Dynamic Pulsing NEW Badge (Issue 9) */
+.badge-live-new {
+    background: rgba(34, 197, 94, 0.18);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    animation: pulseBadge 1.8s infinite;
+}
+@keyframes pulseBadge { 0% { opacity: 1; } 50% { opacity: 0.55; } 100% { opacity: 1; } }
+
+.clickable-feedback-row {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-main);
+    box-shadow: var(--shadow);
+    transition: transform 0.15s, border-color 0.15s;
+    cursor: pointer;
+}
+.clickable-feedback-row:active { transform: scale(0.98); }
+.clickable-feedback-row.urgent-attention { border-left: 4px solid #ef4444; }
+
+/* ==========================================================================
+   8. SKELETON LOADERS
+   ========================================================================== */
+.skeleton,
+.skeleton-item,
+.skeleton-loader,
+.skeleton-item-long {
+    width: 100%;
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+}
+
+.skeleton-item-long {
+    height: 75px;
+    margin-bottom: 12px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.hidden { display: none !important; }

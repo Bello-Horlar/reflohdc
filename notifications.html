@@ -1,0 +1,218 @@
+<!-- TITLE: app/notifications.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | notifications</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .notif-page-container {
+            padding: 0 25px 100px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .notif-header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip.active {
+            background: var(--primary);
+            color: #ffffff !important;
+            border-color: var(--primary);
+        }
+
+        .mark-read-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .mark-read-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Notification Card */
+        .notif-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notif-card:active {
+            transform: scale(0.98);
+        }
+
+        .notif-card.unread {
+            border-left: 4px solid var(--primary);
+            background: var(--bg-card);
+        }
+
+        .notif-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        /* Color accents per notification type */
+        .type-low_rating { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .type-new_booking { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+        .type-booking_status { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .type-payment_success { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .type-trial_warning { background: rgba(234, 88, 12, 0.15); color: #ea580c; }
+        .type-sub_expired { background: rgba(220, 38, 38, 0.15); color: #dc2626; }
+        .type-support_reply { background: rgba(147, 51, 234, 0.15); color: #9333ea; }
+
+        .notif-body {
+            flex: 1;
+        }
+
+        .notif-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notif-msg {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .notif-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: inline-block;
+        }
+
+        .unread-badge-pill {
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <!-- MASTER HEADER -->
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='dashboard.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">🌓</button>
+    </header>
+
+    <main class="notif-page-container">
+        <!-- TITLE SECTION -->
+        <div class="master-page-title" style="padding: 25px 0 15px;">
+            <div style="display: flex; align-items: center;">
+                <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;">Notifications</h1>
+                <span id="unreadCountBadge" class="unread-badge-pill">0</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Real-time business updates and priority alerts</p>
+        </div>
+
+        <!-- ACTIONS & FILTERS -->
+        <div class="notif-header-actions">
+            <div class="filter-tabs">
+                <button class="filter-chip active" data-filter="all" onclick="NotificationsApp.setFilter('all', this)">All</button>
+                <button class="filter-chip" data-filter="unread" onclick="NotificationsApp.setFilter('unread', this)">Unread</button>
+            </div>
+            <button class="mark-read-btn" onclick="NotificationsApp.markAllAsRead()">Mark all as read</button>
+        </div>
+
+        <!-- NOTIFICATIONS FEED -->
+        <div id="notifications-feed">
+            <div class="skeleton-item-long" style="height: 80px; border-radius: 20px; margin-bottom: 12px;"></div>
+            <div class="skeleton-item-long" style="height: 80px; border-radius: 20px; margin-bottom: 12px;"></div>
+            <div class="skeleton-item-long" style="height: 80px; border-radius: 20px;"></div>
+        </div>
+
+        <!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 40px;">Quick Navigation</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏠</i><span>Home</span></a>
+                <a href="feedback.html" class="nav-shortcut"><i>⭐</i><span>Reviews</span></a>
+                <a href="bookings.html" class="nav-shortcut"><i>📅</i><span>Bookings</span></a>
+                <a href="profile.html" class="nav-shortcut"><i>⚙️</i><span>Profile</span></a>
+                <a href="share.html" class="nav-shortcut"><i>🔳</i><span>QR Hub</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+            </div>
+        </div>
+    </main>
+<p class="reflo-powered-tag">
+    <em>REFLO powered by HDC</em>
+</p>
+
+    <!-- DEPENDENCIES -->
+<script src="../assets/js/network-listener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/notifications.js"></script>
+<!-- TRIAL & PLAN ENTITLEMENT GATE -->
+    <script src="../assets/js/trial-gate.js"></script>
+</body>
+</html>

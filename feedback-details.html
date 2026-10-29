@@ -1,0 +1,389 @@
+<!-- TITLE: app/feedback-details.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | feedback-details</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .details-page-container {
+            padding: 0 25px 100px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* Hero Rating Banner */
+        .rating-hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 26px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .rating-hero-card.rating-low {
+            border-left: 6px solid #ef4444;
+        }
+
+        .rating-hero-card.rating-high {
+            border-left: 6px solid #22c55e;
+        }
+
+        .rating-hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stars-large {
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+        }
+
+        .feedback-quote-box {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-main);
+            background: var(--bg-body);
+            padding: 16px 20px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+
+        .date-badge {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* Google Maps Conversion Status Badges */
+        .google-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        .google-status-pill.clicked {
+            background: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .google-status-pill.unclicked {
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Business Owner Pro-Tip Box */
+        .owner-tip-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.12) 100%);
+            border: 1.5px solid #f59e0b;
+            border-radius: 20px;
+            padding: 16px 18px;
+            margin-bottom: 20px;
+        }
+        .owner-tip-box h4 {
+            font-size: 0.88rem;
+            font-weight: 900;
+            color: #d97706;
+            margin: 0 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .owner-tip-box p {
+            font-size: 0.8rem;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        /* Customer Contact Info Card */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 540px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-tile {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            border-radius: 16px;
+        }
+
+        .info-tile label {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+
+        .info-tile span {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        /* Action Buttons Grid */
+        .recovery-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 580px) {
+            .recovery-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn-action-contact {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-decoration: none;
+            color: #ffffff !important;
+            transition: transform 0.15s;
+        }
+        .btn-action-contact:active { transform: scale(0.96); }
+
+        .btn-phone { background: #2563eb !important; }
+        .btn-whatsapp { background: #16a34a !important; }
+        .btn-email { background: #7c3aed !important; }
+
+        .status-badge-pill {
+            font-size: 0.72rem;
+            font-weight: 900;
+            padding: 5px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .status-new { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .status-contacted { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .status-in_progress { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+        .status-resolved { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+
+        /* Notes Textarea */
+        .notes-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            resize: vertical;
+            min-height: 110px;
+            margin-bottom: 12px;
+        }
+        .notes-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .booking-link-box {
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px dashed var(--primary);
+            border-radius: 18px;
+            padding: 16px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <!-- MASTER HEADER -->
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='feedback.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.1rem;">🌓</button>
+    </header>
+
+    <main class="details-page-container">
+        <div class="master-page-title" style="padding: 25px 0 15px;">
+            <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;">Customer Feedback & Recovery</h1>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Review ratings, verify Google Maps conversion, and manage recovery workflows</p>
+        </div>
+
+        <!-- 1. HERO RATING & COMMENT -->
+        <section id="ratingHeroCard" class="rating-hero-card">
+            <div class="rating-hero-header">
+                <div>
+                    <span id="starDisplay" class="stars-large">★★★★★</span>
+                    <span id="scoreTag" style="font-size: 1.1rem; font-weight: 900; margin-left: 8px;">5.0</span>
+                </div>
+                <span id="overallStatusBadge" class="status-badge-pill status-new">NEW</span>
+            </div>
+
+            <!-- GOOGLE MAPS CONVERSION BADGE -->
+            <div id="googleStatusBadgeArea">
+                <!-- Dynamically populated: 🟢 Visited Google Maps vs 🟡 Not Clicked Yet -->
+            </div>
+
+            <div id="feedbackText" class="feedback-quote-box">
+                Loading customer feedback...
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="feedbackDate" class="date-badge">Submitted --</span>
+                <span id="urgencyNotice" style="font-size: 0.75rem; font-weight: 800; color: #ef4444; display: none;">⚠️ PRIORITY RECOVERY ITEM</span>
+            </div>
+        </section>
+
+        <!-- PRO-TIP BOX FOR UNCLICKED 4-5 STAR CUSTOMERS -->
+        <div id="googleFollowupTipBox" class="owner-tip-box" style="display: none;">
+            <h4>💡 Owner Tip: Convert this happy client to Google Maps</h4>
+            <p>
+                This customer gave you a top rating but hasn't posted on Google yet. Since they are your verified client and already love your service, you can politely follow up with them via WhatsApp. Keep your tone appreciative and non-pushy!
+            </p>
+        </div>
+
+        <!-- 2. CUSTOMER CONTACT DETAILS -->
+        <div class="section-label">1. Customer Information</div>
+        <div class="settings-card" style="margin-bottom: 20px;">
+            <div class="info-grid">
+                <div class="info-tile">
+                    <label>Customer Name</label>
+                    <span id="custName">Anonymous</span>
+                </div>
+                <div class="info-tile">
+                    <label>Phone / WhatsApp</label>
+                    <span id="custPhone">Not provided</span>
+                </div>
+                <div class="info-tile">
+                    <label>Email Address</label>
+                    <span id="custEmail">Not provided</span>
+                </div>
+                <div class="info-tile">
+                    <label>Contact Permission</label>
+                    <span id="contactPermission">Direct Contact Allowed</span>
+                </div>
+            </div>
+
+            <!-- ACTION: DIRECT CONTACT BUTTONS -->
+            <div id="contactActionsArea" class="recovery-actions-grid">
+                <a id="btnCall" href="#" class="btn-action-contact btn-phone" style="display: none;">
+                    📞 Call Customer
+                </a>
+                <a id="btnWhatsApp" href="#" target="_blank" class="btn-action-contact btn-whatsapp" style="display: none;">
+                    💬 WhatsApp Chat
+                </a>
+                <a id="btnEmail" href="#" class="btn-action-contact btn-email" style="display: none;">
+                    ✉️ Send Email
+                </a>
+            </div>
+            <p id="noContactMsg" class="text-muted" style="font-size: 0.78rem; text-align: center; margin: 10px 0; display: none;">
+                Customer chose to submit feedback anonymously without contact information.
+            </p>
+        </div>
+
+        <!-- 3. WORKFLOW STATUS & DYNAMIC ACTION BUTTONS -->
+        <div class="section-label">2. Recovery Workflow Status</div>
+        <div class="settings-card" style="margin-bottom: 20px;">
+            <div class="info-grid" style="margin-bottom: 15px;">
+                <div class="info-tile">
+                    <label>Contact Status</label>
+                    <span id="contactStatusText">Not Contacted</span>
+                </div>
+                <div class="info-tile">
+                    <label>Resolution Status</label>
+                    <span id="resolutionStatusText">Unresolved</span>
+                </div>
+            </div>
+
+            <!-- DYNAMIC BUTTONS CONTAINER (1 Button for 4-5★ Google Clicked, 2 Buttons for Unresolved/Low Ratings) -->
+            <div id="dynamicWorkflowButtonsArea">
+                <!-- Injected dynamically by Feedback-details.js -->
+            </div>
+        </div>
+
+        <!-- 4. INTERNAL STAFF NOTES -->
+        <div class="section-label">3. Internal Notes (Private to Business)</div>
+        <div class="settings-card" style="margin-bottom: 20px;">
+            <textarea id="internalNotesInput" class="notes-textarea" placeholder="Add private staff notes here (e.g. 'Spoke with customer, resolved issue or followed up on Google review.'). Customers will never see these notes."></textarea>
+            <button type="button" id="btnSaveNote" class="btn-primary" style="width: 100%; padding: 14px;" onclick="FeedbackDetailsApp.saveNotes()">
+                💾 Save Internal Note
+            </button>
+        </div>
+
+        <!-- 5. RELATED BOOKINGS -->
+        <div id="relatedBookingSection" style="display: none;">
+            <div class="section-label">4. Related Booking Appointment</div>
+            <div class="settings-card" style="margin-bottom: 25px;">
+                <div class="booking-link-box">
+                    <div>
+                        <strong id="relatedBookingService">Consultation</strong>
+                        <div id="relatedBookingDate" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-top: 2px;">Date & Time</div>
+                    </div>
+                    <a id="relatedBookingLink" href="bookings.html" class="btn-outline" style="padding: 8px 14px; font-size: 0.75rem; text-decoration: none;">
+                        View Booking →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 30px;">Quick Navigation</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏠</i><span>Home</span></a>
+                <a href="feedback.html" class="nav-shortcut"><i>⭐</i><span>Reviews</span></a>
+                <a href="bookings.html" class="nav-shortcut"><i>📅</i><span>Bookings</span></a>
+                <a href="analytics.html" class="nav-shortcut"><i>📊</i><span>Analytics</span></a>
+                <a href="share.html" class="nav-shortcut"><i>🔳</i><span>QR Hub</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+            </div>
+        </div>
+    </main>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- DEPENDENCIES -->
+<script src="../assets/js/network-listener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/user/feedback-details.js"></script>
+</body>
+</html>

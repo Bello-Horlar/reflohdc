@@ -1,0 +1,350 @@
+<!-- TITLE: app/share.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Share My QR & Link</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .share-page-container {
+            padding: 0 25px 100px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .value-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: #ffffff;
+            border-radius: 28px;
+            padding: 24px 22px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .value-banner h2 {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .value-banner p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            line-height: 1.4;
+            max-width: 480px;
+            margin: 0 auto 15px;
+        }
+
+        .action-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .qr-master-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 35px 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .qr-canvas-wrap {
+            width: 240px;
+            height: 240px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 24px;
+            border: 2px solid var(--border);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-canvas-wrap img, .qr-canvas-wrap canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .link-copy-group {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-body);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 6px 6px 6px 16px;
+            margin-bottom: 22px;
+            align-items: center;
+        }
+
+        .link-text-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            font-weight: 700;
+            outline: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-copy-action {
+            background: var(--primary);
+            color: #ffffff !important;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.15s;
+        }
+        .btn-copy-action:active { transform: scale(0.95); }
+
+        .action-button-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* =====================================================================
+           PRINT STAND STYLES (Hidden on screen, perfectly formatted on paper)
+           ===================================================================== */
+        #printableArea {
+            display: none;
+        }
+
+        @media print {
+            /* 1. Hide everything on screen */
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .master-header,
+            .share-page-container,
+            .reflo-powered-tag {
+                display: none !important;
+            }
+
+            /* 2. Format Stand Card for Paper / Printers */
+            #printableArea {
+                display: block !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 40px 20px;
+                box-sizing: border-box;
+                text-align: center;
+            }
+
+            .print-frame {
+                border: 3px solid #000000;
+                border-radius: 28px;
+                padding: 40px 30px;
+                max-width: 500px;
+                margin: 0 auto;
+                page-break-inside: avoid;
+            }
+
+            .print-badge {
+                display: inline-block;
+                background: #000000;
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 900;
+                padding: 6px 16px;
+                border-radius: 20px;
+                letter-spacing: 1px;
+                margin-bottom: 16px;
+            }
+
+            .print-title {
+                font-size: 30px;
+                font-weight: 900;
+                margin-bottom: 8px;
+                color: #000000;
+            }
+
+            .print-desc {
+                font-size: 15px;
+                color: #444444;
+                line-height: 1.4;
+                margin-bottom: 24px;
+                font-weight: 600;
+            }
+
+            .print-qr-box {
+                display: inline-block;
+                padding: 18px;
+                background: #ffffff;
+                border: 2px solid #000000;
+                border-radius: 20px;
+                margin-bottom: 20px;
+            }
+
+            .print-actions {
+                font-size: 14px;
+                font-weight: 800;
+                color: #000000;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: center;
+                gap: 14px;
+            }
+
+            .print-tip {
+                font-size: 12px;
+                color: #666666;
+                font-weight: 600;
+                display: block;
+                margin-bottom: 20px;
+            }
+
+            .print-footer {
+                font-size: 11px;
+                font-weight: 900;
+                color: #888888;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                border-top: 1px dashed #cccccc;
+                padding-top: 14px;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='dashboard.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="share-page-container">
+        <div class="master-page-title" style="padding: 25px 0 15px;">
+            <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;">Customer Hub & QR Code</h1>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Share one universal link for instant customer reviews and appointment bookings</p>
+        </div>
+
+        <!-- 1. EXPLAINER BANNER -->
+        <div class="value-banner">
+            <h2>ONE QR CODE • TWO CUSTOMER ACTIONS</h2>
+            <p>Place this QR code at your checkout counter, tables, or entrance. Customers scan directly without installing any application.</p>
+            <div class="action-badges">
+                <span class="action-badge">⭐ 1. LEAVE FEEDBACK</span>
+                <span class="action-badge">📅 2. BOOK A VISIT</span>
+            </div>
+        </div>
+
+        <!-- 2. QR PREVIEW & MANAGEMENT CARD -->
+        <section class="qr-master-card">
+            <h3 id="bizNameHeading" style="font-size: 1.25rem; font-weight: 900; margin-bottom: 5px;">Your Business QR</h3>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 20px;">Scan with any smartphone camera</p>
+
+            <!-- QR Preview Box -->
+            <div id="qrPreviewBox" class="qr-canvas-wrap">
+                <div id="qrLoadingSkeleton" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">Generating QR...</div>
+            </div>
+
+            <!-- Copy Direct URL Box -->
+            <div class="link-copy-group">
+                <input type="text" id="directHubUrlInput" class="link-text-input" readonly value="Loading link...">
+                <button type="button" class="btn-copy-action" id="copyLinkBtn" onclick="ShareApp.copyLink()">Copy</button>
+            </div>
+
+            <!-- Primary Action Buttons (WhatsApp removed, clean 2-button stack) -->
+            <div class="action-button-stack">
+                <button type="button" class="btn-primary" style="padding: 15px;" onclick="ShareApp.downloadPNG()">
+                    📥 Download High-Res QR (PNG)
+                </button>
+                <button type="button" class="btn-outline" style="padding: 15px;" onclick="ShareApp.printQR()">
+                    🖨️ Print Counter Display Stand
+                </button>
+            </div>
+        </section>
+
+        <!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 30px;">Quick Navigation</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏠</i><span>Home</span></a>
+                <a href="feedback.html" class="nav-shortcut"><i>⭐</i><span>Reviews</span></a>
+                <a href="bookings.html" class="nav-shortcut"><i>📅</i><span>Bookings</span></a>
+                <a href="subscription.html" class="nav-shortcut"><i>💳</i><span>Plans</span></a>
+                <a href="profile.html" class="nav-shortcut"><i>⚙️</i><span>Profile</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. PRINTABLE DISPLAY STAND (Renders exclusively on paper / printers) -->
+    <div id="printableArea">
+        <div class="print-frame">
+            <div class="print-badge">SCAN TO CONNECT</div>
+            <h1 id="printBizName" class="print-title">Business Name</h1>
+            <p class="print-desc">How was your visit today? Scan with your phone camera to leave a review or book your next visit!</p>
+            
+            <div class="print-qr-box">
+                <div id="printQrTarget"></div>
+            </div>
+
+            <div class="print-actions">
+                <span>⭐ 1. Leave Feedback</span>
+                <span>•</span>
+                <span>📅 2. Book an Appointment</span>
+            </div>
+
+            <span class="print-tip">No app needed — just open your camera</span>
+            <div class="print-footer">Powered by REFLO</div>
+        </div>
+    </div>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/user/Share.js"></script>
+    <script src="../assets/js/trial-gate.js"></script>
+</body>
+</html>

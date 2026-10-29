@@ -1,0 +1,142 @@
+<!-- TITLE: privacy.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Privacy Policy</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        .legal-page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .legal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .legal-container {
+            flex: 1;
+            padding: 40px 20px 80px;
+            max-width: 720px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .legal-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 32px;
+            padding: 40px 30px;
+            box-shadow: var(--shadow);
+            line-height: 1.7;
+        }
+
+        .legal-card h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .legal-date-badge {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 18px;
+            display: block;
+        }
+
+        .legal-card h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin: 28px 0 10px;
+            color: var(--primary);
+        }
+
+        .legal-card p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .legal-card ul {
+            margin: 0 0 20px 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .legal-card li { margin-bottom: 8px; }
+    </style>
+</head>
+<body class="legal-page-wrapper">
+
+    <!-- HEADER -->
+    <header class="legal-header">
+        <a href="index.html" class="brand-nav-btn" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
+            <img src="assets/images/reflo-icon.png" alt="REFLO" style="height: 28px; width: 28px; object-fit: contain;">
+            <span style="font-weight: 900; color: var(--primary); font-size: 1.15rem;">REFLO</span>
+        </a>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="legal-container">
+        <div class="legal-card">
+            <h1>Privacy Policy</h1>
+            <!-- DYNAMIC LAST UPDATED DATE (No hardcoding) -->
+            <span class="legal-date-badge">Last Updated: <span id="legalLastUpdatedDate">Loading...</span></span>
+
+            <p>At <strong>REFLO</strong>, we respect your privacy and are committed to protecting the personal data of both our business subscribers and the customers who submit reviews and bookings through our platform.</p>
+
+            <h2>1. Information We Collect</h2>
+            <p>We collect only the information necessary to provide our review management, customer recovery, and appointment booking services:</p>
+            <ul>
+                <li><strong>Business Account Data:</strong> Owner name, business email, contact phone number, business category, and Google Business Profile URL (used strictly for trial verification and anti-abuse protection).</li>
+                <li><strong>Customer Feedback & Bookings:</strong> Customer ratings (1–5 stars), written comments, and optional customer contact details (name, phone, email) voluntarily supplied for customer recovery.</li>
+                <li><strong>Payment Information:</strong> All billing and subscription transactions are processed directly via Paystack. REFLO never stores or has access to your raw credit or debit card numbers.</li>
+            </ul>
+
+            <h2>2. Customer Details & Data Isolation</h2>
+            <p>Customer contact information is private. We strictly enforce database-level <strong>Row Level Security (RLS)</strong> so that Business A can never access Business B's customer data or reviews. We never sell, rent, or trade customer contact details to third-party data brokers or advertisers.</p>
+
+            <h2>3. How We Use Customer Feedback Data</h2>
+            <p>Customer contact details are made available exclusively to the verified business owner who received the feedback, solely to facilitate private customer recovery (resolving low-rating issues) and confirming appointment bookings.</p>
+
+            <h2>4. Security Standards</h2>
+            <p>All data transmitted across REFLO is secured using enterprise SSL/TLS encryption. Sensitive administrative actions, subscription entitlements, and payment verifications are executed exclusively through authenticated, secure server-side environments.</p>
+
+            <a href="index.html" class="btn-primary" style="display: inline-block; padding: 12px 24px; text-decoration: none; margin-top: 20px; font-size: 0.85rem;">
+                ← Back to Home
+            </a>
+<p class="reflo-powered-tag">
+    <em>REFLO powered by HDC</em>
+</p>
+        </div>
+    </main>
+<script src="assets/js/network-listener.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script>
+        // Dynamically renders the current Month and Year
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateEl = document.getElementById('legalLastUpdatedDate');
+            if (dateEl) {
+                const now = new Date();
+                dateEl.innerText = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            }
+        });
+    </script>
+</body>
+</html>

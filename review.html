@@ -1,0 +1,370 @@
+<!-- TITLE: public/review.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Leave Feedback | REFLO</title>
+<!-- CLEAN URL MASKER: Hides "/public/review.html" from address bar -->
+<script>
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var biz = params.get('biz') || params.get('business');
+        if (biz && window.location.pathname.indexOf('.html') !== -1) {
+            window.history.replaceState({}, document.title, '/review?biz=' + encodeURIComponent(biz));
+        }
+    })();
+</script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .public-page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .public-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .review-main-container {
+            flex: 1;
+            padding: 25px 20px 60px;
+            max-width: 520px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Mini Business Header Card */
+        .biz-mini-hero {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .biz-mini-logo-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+            background: #ffffff;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .biz-mini-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .biz-mini-details h2 {
+            font-size: 1.15rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 2px;
+        }
+
+        .biz-mini-details p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .review-form-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 30px 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-heading-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-subtext {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .star-rating-box {
+            text-align: center;
+            background: var(--bg-body);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 15px;
+            margin-bottom: 22px;
+        }
+
+        .star-buttons-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .star-tap-btn {
+            background: none;
+            border: none;
+            font-size: 2.4rem;
+            color: var(--border);
+            cursor: pointer;
+            transition: transform 0.15s ease, color 0.15s ease;
+            padding: 0;
+            line-height: 1;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .star-tap-btn.selected {
+            color: #f59e0b;
+            transform: scale(1.1);
+        }
+
+        .rating-feedback-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-main);
+            min-height: 20px;
+        }
+
+        .input-group-item {
+            margin-bottom: 16px;
+        }
+
+        .input-group-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        /* High-Contrast Inputs (Issue 10) */
+        .input-box-field {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-box-field:focus {
+            border-color: var(--primary);
+        }
+
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .form-row-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .privacy-explainer-card {
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 0.78rem;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+
+        .privacy-explainer-card strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 800;
+        }
+
+        .anonymous-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .anonymous-toggle-row input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .btn-review-submit {
+            width: 100%;
+            padding: 16px;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.15s ease;
+        }
+
+   .public-hub-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .btn-review-submit:active { transform: scale(0.98); }
+        .btn-review-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body class="public-page-wrapper">
+
+    <!-- HEADER WITH RETURN TO HUB NAVIGATION -->
+    <header class="public-page-header">
+        <button type="button" class="brand-nav-btn" onclick="PublicReview.returnToHub()">
+            <span>◀ Hub</span>
+        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="../assets/images/reflo-icon.png" alt="REFLO" style="height: 22px; width: 22px; object-fit: contain;">
+            <span style="font-weight: 900; font-size: 0.9rem; color: var(--primary);">REFLO</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="review-main-container">
+        <!-- MINI BUSINESS IDENTITY -->
+        <section class="biz-mini-hero">
+            <div class="biz-mini-logo-box">
+                <img id="reviewBizLogo" src="../assets/images/default-business-logo.png" alt="Business Logo">
+            </div>
+            <div class="biz-mini-details">
+                <h2 id="reviewBizName">Loading Business...</h2>
+                <p>Tell us about your experience</p>
+            </div>
+        </section>
+
+        <!-- FEEDBACK FORM CARD -->
+        <section class="review-form-card">
+            <h1 class="form-heading-title">How was your visit?</h1>
+            <p class="form-subtext">Tap a star rating and share your genuine feedback below.</p>
+
+            <form id="publicReviewForm" onsubmit="PublicReview.handleSubmit(event)">
+                
+                <!-- 1. STAR RATING SELECTOR -->
+                <div class="star-rating-box">
+                    <div class="star-buttons-row" id="starButtonsRow">
+                        <button type="button" class="star-tap-btn" data-star="1" onclick="PublicReview.setRating(1)">★</button>
+                        <button type="button" class="star-tap-btn" data-star="2" onclick="PublicReview.setRating(2)">★</button>
+                        <button type="button" class="star-tap-btn" data-star="3" onclick="PublicReview.setRating(3)">★</button>
+                        <button type="button" class="star-tap-btn" data-star="4" onclick="PublicReview.setRating(4)">★</button>
+                        <button type="button" class="star-tap-btn" data-star="5" onclick="PublicReview.setRating(5)">★</button>
+                    </div>
+                    <div class="rating-feedback-label" id="ratingLabel">Select your rating</div>
+                </div>
+
+                <!-- 2. FEEDBACK COMMENT -->
+                <div class="input-group-item">
+                    <label>Your Feedback / Experience *</label>
+                    <textarea id="reviewCommentInput" class="input-box-field" rows="4" placeholder="What went well? What could we improve?" required></textarea>
+                </div>
+
+                <!-- 3. CONTACT INFORMATION EXPLAINER CALLOUT -->
+                <div class="privacy-explainer-card">
+                    <strong>💡 Why provide your contact details?</strong>
+                    If your experience wasn't ideal, sharing your name and contact info gives the business owner an opportunity to personally reach out, apologize, and resolve the issue.
+                </div>
+
+                <!-- 4. ANONYMOUS TOGGLE OPTION -->
+                <label class="anonymous-toggle-row" id="anonymousToggleWrap">
+                    <input type="checkbox" id="anonymousCheckbox" onchange="PublicReview.toggleAnonymous(this.checked)">
+                    <span>Submit anonymously (Business cannot contact you)</span>
+                </label>
+
+                <!-- 5. CONTACT INPUTS CONTAINER -->
+                <div id="contactFieldsContainer">
+                    <div class="input-group-item">
+                        <label id="nameFieldLabel">Your Name</label>
+                        <input type="text" id="custNameInput" class="input-box-field" placeholder="e.g. John Doe" autocomplete="name">
+                    </div>
+
+                    <div class="form-row-2col">
+                        <div class="input-group-item">
+                            <label id="phoneFieldLabel">Phone / WhatsApp</label>
+                            <input type="tel" id="custPhoneInput" class="input-box-field" placeholder="+234 800 000 0000" autocomplete="tel">
+                        </div>
+                        <div class="input-group-item">
+                            <label id="emailFieldLabel">Email Address</label>
+                            <input type="email" id="custEmailInput" class="input-box-field" placeholder="john@example.com" autocomplete="email">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBMIT BUTTON -->
+                <button type="submit" class="btn-review-submit" id="submitReviewBtn">
+                    Submit Feedback
+                </button>
+            </form>
+        </section>
+    </main>
+
+   <footer class="public-hub-footer">
+         <strong>REFLO</strong> Powered securely by <strong>HDC</strong>  • Feedback & Booking Platform
+    </footer>
+
+
+    <!-- DEPENDENCIES -->
+<script src="../assets/js/network-listener.js"></script>
+<script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/public/Review.js"></script>
+</body>
+</html>

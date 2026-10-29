@@ -1,0 +1,934 @@
+<!-- TITLE: index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Customer Reviews, Recovery & Bookings</title>
+
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/images/Reflo-icon.png">
+    <link rel="apple-touch-icon" href="assets/images/Reflo-icon.png">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="REFLO">
+    <meta property="og:title" content="REFLO | Customer Reviews, Recovery & Bookings">
+    <meta property="og:description" content="Turn customer feedback into more 5-star Google reviews, intercept unhappy customers privately, and automate appointments.">
+    <meta property="og:image" content="https://reflohdc.netlify.app/assets/images/Reflo-logo.png">
+    <meta property="og:url" content="https://reflohdc.netlify.app/">
+
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="REFLO | Customer Reviews, Recovery & Bookings">
+    <meta name="twitter:description" content="Turn customer feedback into more 5-star Google reviews, intercept unhappy customers privately, and automate appointments.">
+    <meta name="twitter:image" content="https://reflohdc.netlify.app/assets/images/Reflo-logo.png">
+
+
+    <script>
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var slug = params.get('biz') || params.get('business');
+            if (slug) {
+                window.location.replace('public/flow.html?biz=' + encodeURIComponent(slug));
+                return;
+            }
+
+            if (window.location.search.indexOf('logout=true') !== -1) return;
+
+            try {
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    if (key && key.indexOf('auth-token') !== -1) {
+                        var raw = localStorage.getItem(key);
+                        if (!raw) continue;
+                        var session = JSON.parse(raw);
+                        if (session && (session.user || session.currentSession)) {
+                            var role = localStorage.getItem('reflo_user_role');
+                            var target = (role === 'admin') ? 'admin/dashboard.html' : 'app/dashboard.html';
+                            window.location.replace(target);
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
+
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        :root {
+            --p: #2563eb;
+            --p-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, system-ui, sans-serif; }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color 0.3s ease;
+        }
+
+
+        .landing-top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .landing-header {
+            width: 100%;
+            height: 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .header-brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header-brand-wrap img {
+            height: 28px;
+            width: 28px;
+            object-fit: contain;
+        }
+
+        .header-brand-wrap span {
+            font-weight: 900;
+            font-size: 1.15rem;
+            color: var(--p);
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-header-login {
+            background: none;
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+            padding: 7px 14px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-header-login:hover { border-color: var(--p); color: var(--p); }
+
+        .theme-toggle-btn {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .viewport-slider {
+            display: flex;
+            width: 900vw;
+            height: 100vh;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+
+        .slide-pane {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 75px 16px 95px;
+            text-align: center;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+
+        body.has-app-banner .slide-pane {
+            padding-top: 125px;
+        }
+
+        .slide-card-box {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 28px;
+            padding: 22px 18px;
+            width: 100%;
+            max-width: 490px;
+            max-height: calc(100vh - 185px);
+            box-shadow: var(--shadow);
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .slide-card-box::-webkit-scrollbar { display: none; }
+
+        body.has-app-banner .slide-card-box {
+            max-height: calc(100vh - 235px); /* Leaves ample space so bottom button never hits the dock */
+        }
+
+        .slide-icon-lg {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .slide-card-box h1, .slide-card-box h2 {
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1.25;
+            margin-bottom: 8px;
+        }
+
+        .slide-card-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .hook-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .hook-input-field {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+        }
+        .hook-input-field:focus { border-color: var(--p); }
+
+        .btn-reflo-cta {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 900;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.15s;
+            margin-top: 6px;
+        }
+        .btn-reflo-cta:active { transform: scale(0.98); }
+
+        .step-pill-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .step-pill-item {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .slide-pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .slide-price-col {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px 6px;
+        }
+
+        .slide-price-col strong { display: block; font-size: 0.75rem; margin-bottom: 2px; }
+        .slide-price-col span { font-size: 1.05rem; font-weight: 900; color: var(--p); }
+
+        .faq-accordion-wrap {
+            text-align: left;
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding-right: 4px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 8px 0;
+        }
+
+        .faq-question {
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active .faq-question { color: var(--p); }
+
+        .bottom-nav-dock {
+            position: fixed;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .dock-controls-inner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 90%;
+            max-width: 440px;
+            pointer-events: auto;
+        }
+
+        .btn-dock-nav {
+            flex: 1;
+            padding: 11px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s;
+        }
+        .btn-dock-nav:active { transform: scale(0.95); }
+
+        .btn-dock-nav.primary-btn {
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+        }
+
+        .dots-row {
+            display: flex;
+            gap: 6px;
+            pointer-events: auto;
+        }
+
+        .progress-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .progress-dot.active {
+            background: var(--p);
+            width: 20px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="landing-top-nav">
+
+        <div id="openInAppBanner" style="display: none; background: #0f172a; color: #ffffff; padding: 10px 18px; align-items: center; justify-content: space-between; font-size: 0.82rem; border-bottom: 1px solid #1e293b;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="assets/images/Reflo-icon.png" alt="REFLO" style="width: 28px; height: 28px; border-radius: 8px; object-fit: contain;">
+                <div>
+                    <strong style="display: block; font-size: 0.85rem; line-height: 1.2;">REFLO App</strong>
+                    <small style="color: #94a3b8; font-size: 0.72rem;">Fast, direct mobile experience</small>
+                </div>
+            </div>
+            <a id="btnOpenAppStore" href="#" style="background: #2563eb; color: #ffffff; padding: 7px 14px; border-radius: 10px; font-weight: 800; text-decoration: none; font-size: 0.78rem;">
+                Download App
+            </a>
+        </div>
+
+        <header class="landing-header">
+            <a href="index.html" class="header-brand-wrap">
+                <img src="assets/images/Reflo-icon.png" alt="REFLO">
+                <span>REFLO</span>
+            </a>
+            
+            <div class="header-actions">
+                <a href="login.html" class="btn-header-login">Login</a>
+                <button class="theme-toggle-btn" id="themeToggle" onclick="RefloTheme.toggle()">🌓</button>
+            </div>
+        </header>
+    </div>
+
+    <div class="viewport-slider" id="mainSlider">
+        
+        <!-- SLIDE 1: HERO -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">🚀</span>
+                <h1>Turn Customer Feedback Into More Reviews & Bookings</h1>
+                <p>REFLO helps businesses collect instant feedback, identify unhappy customers before they leave, manage appointments, and grow their reputation from one simple platform.</p>
+                
+                <div class="hook-input-group">
+                    <input type="email" id="hookEmail" class="hook-input-field" placeholder="Enter your business email...">
+                    <button type="button" class="btn-reflo-cta" onclick="LandingSlider.startWithEmail()">
+                        Start 30-Day Free Trial →
+                    </button>
+                    <small style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">
+                        Growth-level access • No credit card required
+                    </small>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: THE PROBLEM -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">📉</span>
+                <h2>Customers Leave Silently When Something Goes Wrong</h2>
+                <p>For every 1 customer who complains, 26 walk away silently and never return. Worse, an unresolved issue turns into a permanent 1-star rant on Google.</p>
+                
+                <div class="step-pill-row">
+                    <div class="step-pill-item" style="border-left: 4px solid #ef4444;">
+                        <span>⚠️</span>
+                        <div><strong>Zero Visibility:</strong> You only discover bad experiences after public complaints appear.</div>
+                    </div>
+                    <div class="step-pill-item" style="border-left: 4px solid #f59e0b;">
+                        <span>🚪</span>
+                        <div><strong>Lost Revenue:</strong> Unhappy customers take their friends and money to your competitors.</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="LandingSlider.goToSlide(2)">
+                    See How REFLO Solves This →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: THE SOLUTION -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">🛡️</span>
+                <h2>Smart Routing & 1-Click Google Reviews</h2>
+                <p>REFLO captures feedback from every customer. Happy reviewers get instant 1-click review copying to Google Maps, while low ratings trigger private recovery alerts.</p>
+
+                <div class="step-pill-row">
+                    <div class="step-pill-item" style="border-left: 4px solid #22c55e;">
+                        <span>⭐</span>
+                        <div><strong>4–5 Star Reviews:</strong> Auto-copies their comment to clipboard for Google Maps and tracks click-throughs so you can follow up with those who haven't posted yet.</div>
+                    </div>
+                    <div class="step-pill-item" style="border-left: 4px solid #ef4444;">
+                        <span>🚨</span>
+                        <div><strong>1–3 Star Reviews:</strong> Instantly alerts you privately to fix the issue before public complaints appear.</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="LandingSlider.goToSlide(3)">
+                    Discover Customer Recovery →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: CUSTOMER RECOVERY -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">🤝</span>
+                <h2>Private Customer Recovery Before They Leave</h2>
+                <p>When an unhappy customer shares contact details, you get their name, phone, and message instantly to call, WhatsApp, or email them and make things right.</p>
+
+                <div class="step-pill-row">
+                    <div class="step-pill-item">
+                        <span>📞</span>
+                        <div><strong>Direct Contact:</strong> Call or WhatsApp the client privately.</div>
+                    </div>
+                    <div class="step-pill-item">
+                        <span>📝</span>
+                        <div><strong>Track Status:</strong> Mark as Contacted, In Progress, or Resolved.</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="LandingSlider.goToSlide(4)">
+                    Explore Universal QR Code →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: ONE QR CODE -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">🔳</span>
+                <h2>ONE QR Code • TWO Customer Actions</h2>
+                <p>Ditch friction and complex downloads. Customers scan one single QR code with their phone camera to leave feedback or book appointments instantly.</p>
+
+                <div class="step-pill-row">
+                    <div class="step-pill-item">
+                        <span>⭐</span>
+                        <div><strong>Action 1: Leave Feedback</strong> in under 10 seconds.</div>
+                    </div>
+                    <div class="step-pill-item">
+                        <span>📅</span>
+                        <div><strong>Action 2: Book a Visit</strong> with full scheduling and details.</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="LandingSlider.goToSlide(5)">
+                    See Analytics & Alerts →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: ANALYTICS -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">📊</span>
+                <h2>Real-Time Intelligence & Lock-Screen Alerts</h2>
+                <p>Track your average rating, volume trends, recovery resolution rate, and receive notifications on your phone even when the app is closed.</p>
+
+                <div class="step-pill-row">
+                    <div class="step-pill-item">
+                        <span>📈</span>
+                        <div><strong>Performance Insights:</strong> Rating distribution and recovery rates.</div>
+                    </div>
+                    <div class="step-pill-item">
+                        <span>🔔</span>
+                        <div><strong>Live Alerts:</strong> Instant notifications for bookings & low ratings.</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="LandingSlider.goToSlide(6)">
+                    View Simple Pricing Plans →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: DYNAMIC PRICING -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">💳</span>
+                <h2>Simple, Transparent Business Plans</h2>
+                <p>Every newly registered business starts with an automatic <strong>30-Day Growth Trial</strong> with zero commitments.</p>
+
+                <div class="slide-pricing-grid">
+                    <div class="slide-price-col">
+                        <strong>Starter</strong>
+                        <span id="landingStarterPrice">$19</span>
+                        <small style="display:block;font-size:0.65rem;color:var(--text-muted);margin-top:2px;">Solo & Small Teams (30 reviews • 20 bookings) / month</small>
+                    </div>
+                    <div class="slide-price-col">
+                        <strong style="color: var(--p);">Growth</strong>
+                        <span id="landingGrowthPrice">$39</span>
+                        <small style="display:block;font-size:0.65rem;color:var(--text-muted);margin-top:2px;">Active Businesses (120 reviews • 60 bookings) / month</small>
+                    </div>
+                    <div class="slide-price-col">
+                        <strong style="color: #22c55e;">PRO</strong>
+                        <span id="landingProPrice">$79</span>
+                        <small style="display:block;font-size:0.65rem;color:#22c55e;font-weight:800;margin-top:2px;">Unlimited Capacity & Phone Wake Alerts</small>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="location.href='register.html'">
+                    Start 30-Day Free Trial →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: FAQ ACCORDION -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">❓</span>
+                <h2>Frequently Asked Questions</h2>
+                
+                <div class="faq-accordion-wrap">
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>1. What is REFLO?</span><span>+</span></div>
+                        <div class="faq-answer">REFLO is a complete customer review management, private customer recovery, appointment booking, and customer engagement SaaS designed to help local businesses grow their reputation.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>2. How does the 30-day trial work?</span><span>+</span></div>
+                        <div class="faq-answer">Every registered business receives 30 days of full access automatically with zero commitments and no credit card required.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>3. Do customers need to install REFLO?</span><span>+</span></div>
+                        <div class="faq-answer">No. Customers scan your QR code or tap your link and interact directly through their standard mobile browser without installing anything.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>4. Can one QR code handle both reviews and bookings?</span><span>+</span></div>
+                        <div class="faq-answer">Yes. One universal QR code and link powers your Customer Hub for feedback collection, appointment scheduling, and customer photo/video uploads. You can turn bookings or uploads on or off anytime in your settings.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>5. How does low-rating recovery work?</span><span>+</span></div>
+                        <div class="faq-answer">When a customer leaves 1, 2, or 3 stars, REFLO immediately alerts you so you can privately call, WhatsApp, or message the customer to resolve their concern before they post publicly.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>6. What is included in the Starter Plan?</span><span>+</span></div>
+                        <div class="faq-answer">Starter is designed for solo operators and includes up to <strong>30 customer reviews and 20 bookings per month</strong>, contact capture, basic performance analytics, in-app notification center, and 1 customer photo upload per booking (no video).</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>7. What is included in the Growth Plan?</span><span>+</span></div>
+                        <div class="faq-answer">Growth is built for active businesses and includes up to <strong>120 reviews and 60 bookings per month</strong>, media uploads of up to 5 photos or 1 video clip, interactive calendar rules, automated follow-ups, CSV/Excel report exports, and real-time dashboard alerts.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>8. What makes the PRO Plan unique?</span><span>+</span></div>
+                        <div class="faq-answer">PRO provides complete operational freedom with <strong>UNLIMITED reviews and UNLIMITED bookings</strong>, up to 10 HD photos/videos per appointment, live Webhooks & REST API keys, custom white-labeling (removes REFLO watermark), and the <strong>exclusive background phone-wake engine</strong> that alerts you with intense 4-pulse vibration even when your phone is locked in your pocket.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>9. Which plan wakes my phone in the background?</span><span>+</span></div>
+                        <div class="faq-answer"><strong>PRO Unlimited</strong> (and active free trials) is the only plan that wakes up your phone screen and triggers priority 4-pulse hardware vibration when your app is closed. Starter and Growth users receive alerts inside their app dashboard.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>10. What happens if my trial ends?</span><span>+</span></div>
+                        <div class="faq-answer">Your business data is 100% safe and never deleted. You simply choose Starter, Growth, or Pro to continue using active features.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>11. How does subscription payment work?</span><span>+</span></div>
+                        <div class="faq-answer">Payments are processed securely via encrypted, PCI-DSS-compliant gateways. You can pay with your everyday bank card, and your bank will automatically take care of any currency conversion smoothly at checkout.</div>
+                    </div>
+                    <div class="faq-item" onclick="this.classList.toggle('active')">
+                        <div class="faq-question"><span>12. How does 1-click Google Review copying work?</span><span>+</span></div>
+                        <div class="faq-answer">When a happy customer leaves 4 or 5 stars, their review text is automatically copied to their clipboard with one tap so they can paste it directly onto your Google Maps page without typing it twice. Your dashboard tracks which customers clicked through so you can follow up with those who haven't posted yet.</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-reflo-cta" onclick="LandingSlider.goToSlide(8)">
+                    Get Started Today →
+                </button>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: FINAL CTA -->
+        <section class="slide-pane">
+            <div class="slide-card-box">
+                <span class="slide-icon-lg">🏆</span>
+                <h1>Ready to Master Your Customer Growth?</h1>
+                <p>Join thousands of smart businesses using REFLO to protect their reputation, recover lost customers, and manage appointments.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                    <a href="register.html" class="btn-reflo-cta">
+                        Start 30-Day Free Trial
+                    </a>
+                    <a href="login.html" class="btn-header-login" style="padding: 12px; text-align: center;">
+                        Existing User? Sign In to Dashboard
+                    </a>
+                </div>
+
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 15px;">
+                    © REFLO SaaS powered by HDC • All Rights Reserved
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- 3. NAVIGATION CONTROLS DOCK -->
+    <footer class="bottom-nav-dock">
+        <div class="dots-row" id="dotsContainer">
+            <div class="progress-dot active" onclick="LandingSlider.goToSlide(0)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(1)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(2)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(3)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(4)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(5)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(6)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(7)"></div>
+            <div class="progress-dot" onclick="LandingSlider.goToSlide(8)"></div>
+        </div>
+
+        <div class="dock-controls-inner">
+            <button type="button" class="btn-dock-nav" id="btnSlideBack" onclick="LandingSlider.prev()" style="visibility: hidden;">
+                ← Back
+            </button>
+            <button type="button" class="btn-dock-nav primary-btn" id="btnSlideNext" onclick="LandingSlider.next()">
+                Next →
+            </button>
+        </div>
+    </footer>
+
+    <!-- DEPENDENCIES -->
+    <script src="assets/js/network-listener.js"></script>
+    <script src="assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script>
+        const LandingSlider = {
+            current: 0,
+            total: 9,
+            sliderEl: document.getElementById('mainSlider'),
+            nextBtn: document.getElementById('btnSlideNext'),
+            backBtn: document.getElementById('btnSlideBack'),
+            dots: document.querySelectorAll('.progress-dot'),
+
+            update() {
+                this.sliderEl.style.transform = `translateX(-${this.current * 100}vw)`;
+                
+                this.dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === this.current);
+                });
+
+                this.backBtn.style.visibility = this.current === 0 ? 'hidden' : 'visible';
+                this.nextBtn.innerText = this.current === (this.total - 1) ? 'Create Account 🚀' : 'Next →';
+            },
+
+            next() {
+                if (this.current < (this.total - 1)) {
+                    this.current++;
+                    this.update();
+                } else {
+                    window.location.href = 'register.html';
+                }
+            },
+
+            prev() {
+                if (this.current > 0) {
+                    this.current--;
+                    this.update();
+                }
+            },
+
+            goToSlide(index) {
+                if (index >= 0 && index < this.total) {
+                    this.current = index;
+                    this.update();
+                }
+            },
+
+            startWithEmail() {
+                const emailInput = document.getElementById('hookEmail');
+                const email = emailInput ? emailInput.value.trim() : '';
+                if (email) {
+                    window.location.href = `register.html?email=${encodeURIComponent(email)}`;
+                } else {
+                    window.location.href = 'register.html';
+                }
+            }
+        };
+
+        // AUTO-LOGIN ROUTER
+        async function checkActiveSessionRedirect() {
+            try {
+                if (typeof db === 'undefined' || !db.auth) return;
+                const { data: { session } } = await db.auth.getSession();
+                
+                if (session && session.user) {
+                    const { data: profile } = await db
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', session.user.id)
+                        .maybeSingle();
+
+                    if (profile && profile.role === 'admin') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else {
+                        window.location.href = 'app/dashboard.html';
+                    }
+                }
+            } catch (err) {
+                console.log("No active session:", err);
+            }
+        }
+
+        // DYNAMIC PRICING LOADER
+        async function loadLivePlatformPricing() {
+            try {
+                if (typeof db === 'undefined') return;
+
+                const { data: config } = await db
+                    .from('platform_settings')
+                    .select('pricing')
+                    .limit(1)
+                    .maybeSingle();
+
+                if (config && config.pricing) {
+                    const starter = config.pricing.starter || 19;
+                    const growth = config.pricing.growth || 39;
+                    const pro = config.pricing.pro || 79;
+
+                    const starterEl = document.getElementById('landingStarterPrice');
+                    const growthEl = document.getElementById('landingGrowthPrice');
+                    const proEl = document.getElementById('landingProPrice');
+
+                    if (starterEl) starterEl.innerText = `$${starter}`;
+                    if (growthEl) growthEl.innerText = `$${growth}`;
+                    if (proEl) proEl.innerText = `$${pro}`;
+                }
+            } catch (err) {
+                console.warn("Using default pricing values:", err);
+            }
+        }
+
+        // KEYBOARD ARROW NAVIGATION
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') LandingSlider.next();
+            if (e.key === 'ArrowLeft') LandingSlider.prev();
+        });
+
+        // TOUCH SWIPE NAVIGATION
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (diff > 50) LandingSlider.next();
+            if (diff < -50) LandingSlider.prev();
+        }, { passive: true });
+
+// Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkActiveSessionRedirect();
+            loadLivePlatformPricing();
+            initAppDownloadBanner(); // 🟢 Connected cleanly without errors
+        });
+
+        // SMART DEVICE DETECTION (ANDROID VS IPHONE)
+        function initAppDownloadBanner() {
+            // 1. Detect if the user is ALREADY inside the installed app
+            var isRunningInApp = window.matchMedia('(display-mode: standalone)').matches 
+                || window.navigator.standalone === true 
+                || document.referrer.includes('android-app://');
+
+
+            if (isRunningInApp) {
+                var banner = document.getElementById('openInAppBanner');
+                if (banner) banner.style.display = 'none';
+                document.body.classList.remove('has-app-banner');
+                return;
+            }
+
+
+            var isAndroid = /Android/i.test(navigator.userAgent);
+            var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            var banner = document.getElementById('openInAppBanner');
+            var openBtn = document.getElementById('btnOpenAppStore');
+
+            if ((isAndroid || isIOS) && banner && openBtn) {
+                banner.style.display = 'flex';
+                document.body.classList.add('has-app-banner');
+
+                if (isIOS) {
+
+                    openBtn.innerText = "Install on iPhone";
+                    openBtn.onclick = function(e) {
+                        e.preventDefault();
+                        if (typeof App !== 'undefined' && App.toast) {
+                            App.toast("Tap the Share icon (⬆️) in Safari, then tap 'Add to Home Screen' to install!", "info");
+                        } else {
+                            alert("To install on iPhone: Tap the Share button (⬆️) at the bottom of Safari, then select 'Add to Home Screen'!");
+                        }
+                    };
+                } else {
+
+                    var myAppUrl = "#"; 
+                    openBtn.innerText = "Download App";
+                    openBtn.onclick = function(e) {
+                        if (!myAppUrl || myAppUrl === "#") {
+                            e.preventDefault();
+                            if (typeof App !== 'undefined' && App.toast) {
+                                App.toast("REFLO app is launching soon on PalmStore & Uptodown! 🚀", "info");
+                            } else {
+                                alert("REFLO app is launching soon on PalmStore & Uptodown! 🚀");
+                            }
+                        } else {
+                            window.location.href = myAppUrl;
+                        }
+                    };
+                }
+            }
+        }
+    </script>
+</body>
+</html>

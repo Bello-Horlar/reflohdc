@@ -1,0 +1,492 @@
+<!-- TITLE: register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Start 30-Day Growth Free Trial</title>
+<!-- INSTANT AUTH BYPASS: Skip registration if user already has an active session -->
+    <script>
+        (function() {
+            if (window.location.search.indexOf('logout=true') !== -1) return;
+
+            try {
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    if (key && key.indexOf('auth-token') !== -1) {
+                        var raw = localStorage.getItem(key);
+                        if (!raw) continue;
+                        var session = JSON.parse(raw);
+                        if (session && (session.user || session.currentSession)) {
+                            window.location.replace('app/dashboard.html');
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        .register-page-wrapper { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg-body); }
+        .register-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: var(--bg-card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .header-left-group { display: flex; align-items: center; gap: 10px; }
+        .title-back-btn { background: none; border: none; font-size: 1.5rem; font-weight: 900; color: var(--text-main); cursor: pointer; padding: 0 4px 0 0; display: flex; align-items: center; }
+        .register-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 30px 20px 60px; }
+        .register-card-box { background: var(--bg-card); border: 1.5px solid var(--border); border-radius: 32px; padding: 38px 28px; width: 100%; max-width: 580px; box-shadow: var(--shadow); }
+        .form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 520px) { .form-row-2col { grid-template-columns: 1fr; gap: 0; } }
+        .input-group-item { margin-bottom: 15px; }
+        .input-group-item label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .reg-input-field { width: 100%; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border); background: var(--bg-card) !important; color: var(--text-main) !important; font-size: 0.95rem; font-weight: 600; outline: none; }
+        .password-input-wrap { position: relative; display: flex; align-items: center; }
+        .btn-toggle-pwd { position: absolute; right: 12px; background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-muted); padding: 4px; }
+        .strength-meter-wrap { height: 4px; background: var(--border); border-radius: 2px; margin: 6px 0; overflow: hidden; }
+        .strength-meter-fill { height: 100%; width: 0%; transition: width 0.3s; }
+        .terms-checkbox-wrap { display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin: 18px 0 22px; }
+        .terms-checkbox-wrap input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+        .btn-register-submit { width: 100%; padding: 16px; background: #2563eb !important; color: #ffffff !important; border: none; border-radius: 16px; font-size: 1.05rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); }
+
+        /* IN-PLACE 20-MINUTE OTP SCREEN */
+        #step2OtpContainer {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.25s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+
+        .otp-box-view {
+            background: var(--bg-body);
+            border: 2px solid var(--primary);
+            border-radius: 26px;
+            padding: 28px 20px;
+            margin: 20px 0;
+        }
+
+        .otp-digit-input {
+            width: 100%;
+            padding: 16px;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 12px;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            color: var(--primary);
+            margin: 18px 0;
+            outline: none;
+        }
+        .otp-digit-input:focus { border-color: var(--primary); }
+
+        .timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body class="register-page-wrapper">
+
+    <header class="register-header">
+        <div class="header-left-group">
+            <button class="title-back-btn" onclick="location.href='index.html'">❮</button>
+            <img src="assets/images/reflo-icon.png" alt="REFLO" style="height: 28px; width: 28px; object-fit: contain;">
+            <span style="font-weight: 900; color: var(--primary); font-size: 1.15rem;">REFLO</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="register-main">
+        <div class="register-card-box">
+            
+            <!-- STEP 1: REGISTRATION FORM -->
+            <div id="step1FormContainer">
+                <h1 style="font-size: 1.7rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px;">Start 30-Day Growth Trial</h1>
+                <p style="color: var(--text-muted); font-size: 0.88rem; font-weight: 600; margin-bottom: 24px;">No credit card required. Full Growth-level access included.</p>
+
+                <form id="registerForm" onsubmit="RegisterApp.handleRegistration(event)">
+                    <div class="form-row-2col">
+                        <div class="input-group-item">
+                            <label>Your Full Name *</label>
+                            <input type="text" id="regFullName" class="reg-input-field" placeholder="John Doe" required autocomplete="name">
+                        </div>
+                        <div class="input-group-item">
+                            <label>Business Name *</label>
+                            <input type="text" id="regBizName" class="reg-input-field" placeholder="e.g. Blue Cafe" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2col">
+                        <div class="input-group-item">
+                            <label>Email Address *</label>
+                            <input type="email" id="regEmail" class="reg-input-field" placeholder="name@business.com" required autocomplete="email">
+                        </div>
+                        <div class="input-group-item">
+                            <label>Phone / WhatsApp *</label>
+                            <input type="tel" id="regPhone" class="reg-input-field" placeholder="+234 800 000 0000" required autocomplete="tel">
+                        </div>
+                    </div>
+
+                    <div class="input-group-item">
+                        <label>Google Business Profile / Map URL *</label>
+                        <input type="url" id="regGoogleUrl" class="reg-input-field" placeholder="https://maps.google.com/..." required>
+                    </div>
+
+                    <div class="form-row-2col">
+                        <div class="input-group-item">
+                            <label>Business Category *</label>
+                            <select id="regCategory" class="reg-input-field" required>
+                                <option value="Restaurant & Cafe">Restaurant & Cafe</option>
+                                <option value="Salon & Spa">Salon & Spa</option>
+                                <option value="Medical & Clinic">Medical & Clinic</option>
+                                <option value="Hotel & Hospitality">Hotel & Hospitality</option>
+                                <option value="Retail & Store">Retail & Store</option>
+                                <option value="Automotive & Repair">Automotive & Repair</option>
+                                <option value="Professional Services">Professional Services</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group-item">
+                            <label>Preferred Currency *</label>
+                            <select id="regCurrency" class="reg-input-field" onchange="RegisterApp.handleCurrencyChange(this.value)" required>
+                                <option value="USD">USD ($) — US Dollar</option>
+                                <option value="NGN">NGN (₦) — Nigerian Naira</option>
+                                <option value="GHS">GHS (GH₵) — Ghanaian Cedi</option>
+                                <option value="KES">KES (KSh) — Kenyan Shilling</option>
+                                <option value="ZAR">ZAR (R) — South African Rand</option>
+                                <option value="EUR">EUR (€) — Euro</option>
+                                <option value="GBP">GBP (£) — British Pound</option>
+                                <option value="AED">AED (DH) — UAE Dirham</option>
+                                <option value="OTHER">Other (Custom Currency)...</option>
+                            </select>
+                            <div id="regCustomCurrencyWrap" style="display: none; margin-top: 8px;">
+                                <input type="text" id="regCustomCurrency" class="reg-input-field" placeholder="e.g. CAD" maxlength="6" style="text-transform: uppercase;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2col">
+                        <div class="input-group-item">
+                            <label>Password (Min. 8 chars) *</label>
+                            <div class="password-input-wrap">
+                                <input type="password" id="regPassword" class="reg-input-field" placeholder="••••••••" required minlength="8" oninput="RegisterApp.checkStrength(this.value)" autocomplete="new-password">
+                                <button type="button" class="btn-toggle-pwd" onclick="RegisterApp.toggleVisibility('regPassword', this)">👁️</button>
+                            </div>
+                            <div class="strength-meter-wrap">
+                                <div class="strength-meter-fill" id="strengthMeter"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group-item">
+                            <label>Confirm Password *</label>
+                            <div class="password-input-wrap">
+                                <input type="password" id="regConfirmPassword" class="reg-input-field" placeholder="••••••••" required minlength="8" autocomplete="new-password">
+                                <button type="button" class="btn-toggle-pwd" onclick="RegisterApp.toggleVisibility('regConfirmPassword', this)">👁️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="terms-checkbox-wrap">
+                        <input type="checkbox" id="termsCheckbox" required>
+                        <span>I agree to the <a href="terms.html" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:800;">Terms</a> and <a href="privacy.html" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:800;">Privacy Policy</a>.</span>
+                    </label>
+
+                    <button type="submit" class="btn-register-submit" id="submitRegBtn">
+                        Create Account & Send Code →
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 22px; font-size: 0.88rem; font-weight: 700;">
+                    Already have an account? <a href="login.html" style="color: var(--primary); text-decoration: none;">Sign In</a>
+                </div>
+            </div>
+
+            <!-- STEP 2: 20-MINUTE OTP SCREEN -->
+            <div id="step2OtpContainer">
+                <div style="font-size: 2.6rem; margin-bottom: 8px;">📩</div>
+                <h2 style="font-size: 1.45rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 6px;">Check Your Email</h2>
+                <p class="text-muted" style="font-size: 0.85rem; font-weight: 600; line-height: 1.4;">
+                    We sent a 6-digit verification code to:
+                    <br><strong id="otpEmailTarget" style="color: var(--primary); font-size: 1rem; display: block; margin-top: 4px;">name@email.com</strong>
+                </p>
+
+                <div class="otp-box-view">
+                    <div class="timer-badge" id="otpTimerDisplay">⏳ Code valid for: 20:00</div>
+                    
+                    <input type="text" id="otpCodeInput" class="otp-digit-input" placeholder="••••••" maxlength="6" autocomplete="one-time-code">
+
+                    <button type="button" class="btn-register-submit" id="btnVerifyOtp" style="padding: 16px; margin-bottom: 12px;" onclick="RegisterApp.verifyOtpCode()">
+                        Verify & Activate 30-Day Trial 🚀
+                    </button>
+
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                        <button type="button" class="btn-outline" style="padding: 10px 16px; font-size: 0.78rem;" id="btnResendOtp" onclick="RegisterApp.resendCode()">
+                            Resend Code
+                        </button>
+                        <button type="button" class="btn-outline" style="padding: 10px 16px; font-size: 0.78rem; border-color: transparent;" onclick="RegisterApp.resetToStep1()">
+                            Change Email / Restart
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="reflo-powered-tag">
+                <em>REFLO powered by HDC</em>
+            </p>
+        </div>
+    </main>
+
+    <!-- DEPENDENCIES -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/eruda"></script> -->
+<!-- <script>eruda.init();</script> -->
+    <script src="assets/js/network-listener.js"></script>
+    <script src="assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/otp.js"></script>
+    <script>
+        const RegisterApp = {
+            cachedForm: null,
+            timerInterval: null,
+
+            async init() {
+                // Restore active 20-minute session when returning from Gmail app
+                const activeSession = RefloOTP.getActiveSession('signup');
+                if (activeSession) {
+                    try {
+                        this.cachedForm = JSON.parse(localStorage.getItem('reflo_cached_signup_form'));
+                    } catch(e){}
+                    this.restoreOtpView(activeSession);
+                    return;
+                }
+
+                const params = new URLSearchParams(window.location.search);
+                const email = params.get('email');
+                if (email) {
+                    const input = document.getElementById('regEmail');
+                    if (input) input.value = email;
+                }
+            },
+
+            restoreOtpView(session) {
+                document.getElementById('step1FormContainer').style.display = 'none';
+                document.getElementById('step2OtpContainer').style.display = 'block';
+                document.getElementById('otpEmailTarget').innerText = session.email;
+                document.getElementById('otpCodeInput').focus();
+
+                this.startCountdown(session.remainingSeconds);
+            },
+
+            startCountdown(totalSeconds) {
+                if (this.timerInterval) clearInterval(this.timerInterval);
+                let remaining = totalSeconds || (20 * 60);
+
+                const display = document.getElementById('otpTimerDisplay');
+                const update = () => {
+                    const mins = Math.floor(remaining / 60);
+                    const secs = remaining % 60;
+                    if (display) {
+                        display.innerText = `⏳ Code valid for: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    }
+                    if (remaining <= 0) {
+                        clearInterval(this.timerInterval);
+                        if (display) display.innerText = '❌ Code Expired. Please tap Resend.';
+                    }
+                    remaining--;
+                };
+
+                update();
+                this.timerInterval = setInterval(update, 1000);
+            },
+
+            handleCurrencyChange(val) {
+                const wrap = document.getElementById('regCustomCurrencyWrap');
+                if (val === 'OTHER') {
+                    wrap.style.display = 'block';
+                    document.getElementById('regCustomCurrency').focus();
+                } else {
+                    wrap.style.display = 'none';
+                }
+            },
+
+            toggleVisibility(inputId, btn) {
+                const input = document.getElementById(inputId);
+                if (!input) return;
+                input.type = input.type === 'password' ? 'text' : 'password';
+                btn.style.opacity = input.type === 'password' ? '0.6' : '1';
+            },
+
+            checkStrength(val) {
+                const meter = document.getElementById('strengthMeter');
+                if (!val) { meter.style.width = '0%'; return; }
+                let score = 0;
+                if (val.length >= 8) score += 33;
+                if (/[0-9]/.test(val)) score += 33;
+                if (/[^A-Za-z0-9]/.test(val)) score += 34;
+                meter.style.width = `${score}%`;
+                meter.style.backgroundColor = score < 66 ? '#ef4444' : score < 100 ? '#f59e0b' : '#22c55e';
+            },
+
+            async handleRegistration(e) {
+                e.preventDefault();
+
+                const fullName = document.getElementById('regFullName').value.trim();
+                const bizName = document.getElementById('regBizName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const phone = document.getElementById('regPhone').value.trim();
+                const googleUrl = document.getElementById('regGoogleUrl').value.trim();
+                const category = document.getElementById('regCategory').value;
+                const password = document.getElementById('regPassword').value;
+                const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+                const curSelect = document.getElementById('regCurrency').value;
+                let currency = curSelect === 'OTHER' ? (document.getElementById('regCustomCurrency').value.trim().toUpperCase() || 'USD') : curSelect;
+
+                if (password !== confirmPassword) {
+                    App.toast("Passwords do not match.", "warning");
+                    return;
+                }
+
+                App.setLoading('submitRegBtn', true, 'Checking location & sending code...');
+
+                try {
+                    // Check duplicate Google Business Profile ONLY for verified accounts
+                    const { data: existingBiz } = await db
+                        .from('businesses')
+                        .select('id, name')
+                        .eq('google_maps_url', googleUrl)
+                        .eq('is_verified', true)
+                        .maybeSingle();
+
+                    if (existingBiz) {
+                        App.toast("⚠️ This Google Business location is already registered. Please sign in to your original account.", "warning");
+                        App.setLoading('submitRegBtn', false, 'Create Account & Send Code →');
+                        return;
+                    }
+
+                    this.cachedForm = { fullName, bizName, email, phone, googleUrl, category, currency, password };
+                    localStorage.setItem('reflo_cached_signup_form', JSON.stringify(this.cachedForm));
+
+                    // Generate & Dispatch 20-minute OTP
+                    const result = await RefloOTP.requestOtp(email, 'signup');
+
+                    // Smooth transition to OTP view
+                    document.getElementById('step1FormContainer').style.display = 'none';
+                    document.getElementById('step2OtpContainer').style.display = 'block';
+                    document.getElementById('otpEmailTarget').innerText = email;
+                    document.getElementById('otpCodeInput').focus();
+
+                    this.startCountdown(result.minutesRemaining * 60);
+
+                    App.toast("Verification code sent to your email! 📩", "success");
+
+                } catch (err) {
+                    App.toast(err.message || "Could not generate code. Please try again.", "error");
+                    App.setLoading('submitRegBtn', false, 'Create Account & Send Code →');
+                }
+            },
+
+            async verifyOtpCode() {
+                const code = document.getElementById('otpCodeInput').value.trim();
+                let saved = this.cachedForm;
+
+                if (!saved) {
+                    try { saved = JSON.parse(localStorage.getItem('reflo_cached_signup_form')); } catch(e){}
+                }
+
+                if (!saved || !saved.email) {
+                    App.toast("Registration session expired. Please restart.", "error");
+                    this.resetToStep1();
+                    return;
+                }
+
+                App.setLoading('btnVerifyOtp', true, 'Verifying code...');
+
+                try {
+                    // Step 1: Verify OTP with Database
+                    await RefloOTP.verifyOtp(saved.email, code, 'signup');
+
+                    // Step 2: Create Auth User
+                    const { data: authData, error: authError } = await db.auth.signUp({
+                        email: saved.email,
+                        password: saved.password,
+                        options: {
+                            data: {
+                                full_name: saved.fullName,
+                                biz_name: saved.bizName,
+                                google_url: saved.googleUrl,
+                                category: saved.category,
+                                currency: saved.currency,
+                                phone: saved.phone
+                            }
+                        }
+                    });
+
+                    if (authError) throw authError;
+
+                    if (!authData.session) {
+                        await db.auth.signInWithPassword({
+                            email: saved.email,
+                            password: saved.password
+                        });
+                    }
+
+                    // Pre-fill Onboarding Cache
+                    localStorage.setItem('reflo_reg_data', JSON.stringify(saved));
+                    localStorage.removeItem('reflo_cached_signup_form');
+
+                    App.toast("Account Verified! 30-Day Growth Trial Activated 🚀", "success");
+                    setTimeout(() => window.location.href = 'app/onboarding.html', 800);
+
+                } catch (err) {
+                    App.toast(err.message || "Invalid or expired verification code.", "error");
+                    App.setLoading('btnVerifyOtp', false, 'Verify & Activate 30-Day Trial 🚀');
+                }
+            },
+
+            async resendCode() {
+                let saved = this.cachedForm;
+                if (!saved) {
+                    try { saved = JSON.parse(localStorage.getItem('reflo_cached_signup_form')); } catch(e){}
+                }
+                if (!saved || !saved.email) return;
+
+                App.toast("Resending code...", "info");
+                try {
+                    const res = await RefloOTP.requestOtp(saved.email, 'signup');
+                    this.startCountdown(res.minutesRemaining * 60);
+                    App.toast("New code sent to your email!", "success");
+                } catch (err) {
+                    App.toast("Could not resend: " + err.message, "error");
+                }
+            },
+
+            resetToStep1() {
+                RefloOTP.clearActiveSession();
+                localStorage.removeItem('reflo_cached_signup_form');
+                if (this.timerInterval) clearInterval(this.timerInterval);
+
+                document.getElementById('step1FormContainer').style.display = 'block';
+                document.getElementById('step2OtpContainer').style.display = 'none';
+                App.setLoading('submitRegBtn', false, 'Create Account & Send Code →');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => RegisterApp.init());
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!-- TITLE: app/support-view.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Support Conversation</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .chat-layout { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--bg-body); }
+        
+        .chat-viewport {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: var(--bg-body);
+        }
+
+       .msg-bubble {
+    max-width: 82%;
+    padding: 14px 18px;
+    border-radius: 22px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    animation: slideIn 0.25s ease-out;
+    word-break: break-word;
+    white-space: pre-wrap; /* 🟢 Preserves all paragraphs, blank lines & step spacing */
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+        @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg-owner {
+            align-self: flex-end;
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            border-bottom-right-radius: 4px;
+        }
+        .msg-admin {
+            align-self: flex-start;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+            box-shadow: var(--shadow);
+        }
+
+        .msg-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 8px;
+            display: block;
+            cursor: pointer;
+        }
+
+        .msg-time {
+            display: block;
+            font-size: 0.65rem;
+            margin-top: 5px;
+            opacity: 0.75;
+            font-weight: 700;
+        }
+        .msg-owner .msg-time { color: rgba(255, 255, 255, 0.85); text-align: right; }
+
+        .chat-input-bar {
+            background-color: var(--bg-card);
+            padding: 12px 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .btn-icon-circle {
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 1.5px solid var(--border); background: var(--bg-body);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.2rem; transition: transform 0.15s;
+            flex-shrink: 0;
+        }
+        .btn-icon-circle:active { transform: scale(0.9); }
+
+        .support-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border: 1.5px solid var(--border);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .support-input:focus { border-color: var(--primary); }
+
+        .status-pill {
+            font-size: 0.65rem; font-weight: 900; padding: 4px 10px;
+            border-radius: 10px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .status-open { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-closed { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+
+        /* MULTI-OPTION ACTION SHEET MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65);
+            display: none; align-items: flex-end; justify-content: center;
+            z-index: 2000; padding: 15px; backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .action-sheet-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 26px; padding: 20px 18px; width: 100%; max-width: 420px;
+            text-align: center; box-shadow: var(--shadow-lg); animation: slideUp 0.2s ease-out;
+            margin-bottom: 10px;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .sheet-menu-btn {
+            width: 100%; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid var(--border); background: var(--bg-body);
+            color: var(--text-main); font-size: 0.92rem; font-weight: 800;
+            margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px;
+            transition: background 0.15s;
+        }
+        .sheet-menu-btn:active { transform: scale(0.98); }
+        .sheet-menu-btn.danger-btn { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+    </style>
+</head>
+<body class="chat-layout">
+
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='support.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <!-- Ticket Meta Header -->
+    <div style="padding: 12px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 id="ticket-subject" style="font-size: 1.05rem; font-weight: 900; letter-spacing: -0.5px; margin: 0 0 2px;">Loading Conversation...</h2>
+            <small class="text-muted" style="font-weight: 700; font-size: 0.72rem;">Long-press any message for options</small>
+        </div>
+        <span id="status-badge" class="status-pill status-open">Active</span>
+    </div>
+
+    <!-- MAIN CHAT VIEWPORT -->
+    <main class="chat-viewport" id="chat-flow">
+        <div class="skeleton-item-long" style="height: 50px; border-radius: 18px;"></div>
+        <div class="skeleton-item-long" style="height: 50px; border-radius: 18px; width: 75%; align-self: flex-end;"></div>
+    </main>
+
+    <!-- INPUT BAR -->
+    <footer class="chat-input-bar">
+        <button type="button" class="btn-icon-circle" onclick="document.getElementById('imgInput').click()" title="Attach Photo">📷</button>
+        <input type="file" id="imgInput" hidden accept="image/*" onchange="SupportApp.handleUserImageUpload(this)">
+
+        <input type="text" id="msgInput" class="support-input" placeholder="Type a message to REFLO support..." autocomplete="off" onkeydown="if(event.key==='Enter') SupportApp.sendReply()">
+        
+        <button type="button" class="btn-primary" id="userSendBtn" style="width: auto; padding: 12px 20px; border-radius: 16px; font-weight: 800;" onclick="SupportApp.sendReply()">
+            Send
+        </button>
+    </footer>
+
+    <!-- MULTI-OPTION ACTION SHEET -->
+    <div id="chatActionSheet" class="modal-overlay" onclick="if(event.target===this) SupportApp.closeActionSheet()">
+        <div class="action-sheet-box">
+            <div style="font-size: 0.85rem; font-weight: 900; color: var(--text-muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.8px;">
+                Message Actions
+            </div>
+
+            <button type="button" class="sheet-menu-btn" onclick="SupportApp.executeCopyMessage()">
+                <span>📋</span>
+                <span>Copy Message Text</span>
+            </button>
+
+            <button type="button" class="sheet-menu-btn" onclick="SupportApp.executeShareMessage()">
+                <span>📤</span>
+                <span>Share Message</span>
+            </button>
+
+            <button type="button" class="sheet-menu-btn danger-btn" onclick="SupportApp.executeDeleteMessage()">
+                <span>🗑️</span>
+                <span>Delete Message</span>
+            </button>
+
+            <button type="button" class="sheet-menu-btn" style="background: var(--bg-card); justify-content: center; margin-top: 6px;" onclick="SupportApp.closeActionSheet()">
+                <span>Cancel</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- DEPENDENCIES -->
+<script src="../assets/js/network-listener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/user/Support.js"></script>
+</body>
+</html>

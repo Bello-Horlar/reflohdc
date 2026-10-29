@@ -1,0 +1,328 @@
+<!-- TITLE: public/booking.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Book an Appointment | REFLO</title>
+<!-- CLEAN URL MASKER: Hides "/public/booking.html" from address bar -->
+<script>
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var biz = params.get('biz') || params.get('business');
+        if (biz && window.location.pathname.indexOf('.html') !== -1) {
+            window.history.replaceState({}, document.title, '/booking?biz=' + encodeURIComponent(biz));
+        }
+    })();
+</script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .public-page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .public-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .booking-main-container {
+            flex: 1;
+            padding: 25px 20px 60px;
+            max-width: 520px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Mini Business Header Card */
+        .biz-mini-hero {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .biz-mini-logo-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+            background: #ffffff;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .biz-mini-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .biz-mini-details h2 {
+            font-size: 1.15rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 2px;
+        }
+
+        .biz-mini-details p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Booking Form Card */
+        .booking-form-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 30px 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-heading-title {
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-subtext {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            font-weight: 600;
+        }
+
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .form-row-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group-item {
+            margin-bottom: 16px;
+        }
+
+        .input-group-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        /* High-Contrast Inputs (Fixed Dark Mode Visibility - Issue 10) */
+        .input-box-field {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-box-field:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-booking-submit {
+            width: 100%;
+            padding: 16px;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.15s ease;
+            margin-top: 10px;
+        }
+
+        .btn-booking-submit:active { transform: scale(0.98); }
+        .btn-booking-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+   .public-hub-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .booking-paused-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 40px 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+    </style>
+</head>
+<body class="public-page-wrapper">
+
+    <!-- HEADER WITH RETURN TO HUB NAVIGATION -->
+    <header class="public-page-header">
+        <button type="button" class="brand-nav-btn" onclick="PublicBooking.returnToHub()">
+            <span>◀ Hub</span>
+        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="../assets/images/reflo-icon.png" alt="REFLO" style="height: 22px; width: 22px; object-fit: contain;">
+            <span style="font-weight: 900; font-size: 0.9rem; color: var(--primary);">REFLO</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="booking-main-container">
+        <!-- MINI BUSINESS IDENTITY -->
+        <section class="biz-mini-hero">
+            <div class="biz-mini-logo-box">
+                <img id="bookingBizLogo" src="../assets/images/default-business-logo.png" alt="Business Logo">
+            </div>
+            <div class="biz-mini-details">
+                <h2 id="bookingBizName">Loading Business...</h2>
+                <p>Schedule your appointment directly</p>
+            </div>
+        </section>
+
+        <!-- BOOKING FORM CARD -->
+        <section class="booking-form-card" id="bookingFormSection">
+            <h1 class="form-heading-title">Request an Appointment</h1>
+            <p class="form-subtext">Fill in your contact details and preferred schedule below.</p>
+
+            <form id="publicBookingForm" onsubmit="PublicBooking.handleSubmit(event)">
+                
+                <!-- 1. Customer Name -->
+                <div class="input-group-item">
+                    <label>Your Full Name *</label>
+                    <input type="text" id="custNameInput" class="input-box-field" placeholder="e.g. Sarah Connor" required autocomplete="name">
+                </div>
+
+                <!-- 2 & 3. Phone & Email -->
+                <div class="form-row-2col">
+                    <div class="input-group-item">
+                        <label>Phone / WhatsApp *</label>
+                        <input type="tel" id="custPhoneInput" class="input-box-field" placeholder="+234 800 000 0000" required autocomplete="tel">
+                    </div>
+                    <div class="input-group-item">
+                        <label>Email Address</label>
+                        <input type="email" id="custEmailInput" class="input-box-field" placeholder="sarah@example.com" autocomplete="email">
+                    </div>
+                </div>
+
+                <!-- 4. Service Selection -->
+                <div class="input-group-item">
+                    <label>Requested Service / Visit Type</label>
+                    <select id="custServiceSelect" class="input-box-field">
+                        <option value="General Visit / Appointment">General Visit / Appointment</option>
+                        <option value="Consultation">Consultation</option>
+                        <option value="Standard Service">Standard Service</option>
+                        <option value="Follow-up">Follow-up</option>
+                    </select>
+                </div>
+
+                <!-- 5 & 6. Preferred Date & Time -->
+                <div class="form-row-2col">
+                    <div class="input-group-item">
+                        <label>Preferred Date *</label>
+                        <input type="date" id="custDateInput" class="input-box-field" required>
+                    </div>
+                    <div class="input-group-item">
+                        <label>Preferred Time *</label>
+                        <input type="time" id="custTimeInput" class="input-box-field" required value="10:00">
+                    </div>
+                </div>
+
+                <!-- 7. Notes / Additional Details -->
+                <div class="input-group-item">
+                    <label>Notes / Special Requests (Optional)</label>
+                    <textarea id="custNotesInput" class="input-box-field" rows="3" placeholder="Let us know if you have any specific requirements..."></textarea>
+                </div>
+<!-- 8. DYNAMIC CUSTOMER MEDIA ATTACHMENTS (Images / Videos) -->
+                <div class="input-group-item" id="custMediaUploadSection" style="display: none; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label id="custMediaLabel" style="margin-bottom: 0;">Upload Photos / Video</label>
+                        <span id="custMediaBadge" style="font-size: 0.7rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: rgba(37,99,235,0.1); color: var(--primary);">Optional</span>
+                    </div>
+                    
+                    <div id="custMediaDropzone" style="border: 2px dashed var(--border); border-radius: 16px; padding: 18px 12px; text-align: center; background: var(--bg-body); cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('custMediaFileInput').click()">
+                        <div style="font-size: 1.8rem; margin-bottom: 4px;">📷</div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main);" id="custMediaUploadText">Tap to select photos or video</div>
+                        <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 3px;" id="custMediaHelpText">Max files allowed</small>
+                    </div>
+                    <input type="file" id="custMediaFileInput" hidden onchange="PublicBooking.handleMediaSelection(this)">
+
+                    <!-- Uploaded Media Previews -->
+                    <div id="custMediaPreviewGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-top: 12px;"></div>
+                </div>
+                <!-- SUBMIT BUTTON -->
+                <button type="submit" class="btn-booking-submit" id="submitBookingBtn">
+                    Confirm & Submit Booking Request
+                </button>
+            </form>
+        </section>
+
+        <!-- BOOKING PAUSED NOTICE -->
+        <section class="booking-paused-card" id="bookingPausedSection">
+            <div style="font-size: 2.8rem; margin-bottom: 12px;">⏸️</div>
+            <h2 style="font-size: 1.3rem; font-weight: 900; margin-bottom: 6px;">Bookings Temporarily Paused</h2>
+            <p class="text-muted" style="font-size: 0.88rem; line-height: 1.4; margin-bottom: 25px;">
+                This business is not currently accepting online appointment requests through REFLO. You can still share your feedback or contact them directly.
+            </p>
+            <button type="button" class="btn-primary" style="padding: 14px 28px; width: auto;" onclick="PublicBooking.returnToHub()">
+                Return to Customer Hub
+            </button>
+        </section>
+    </main>
+
+    <footer class="public-hub-footer">
+         <strong>REFLO</strong> Powered securely by <strong>HDC</strong>  • Feedback & Booking Platform
+    </footer>
+
+
+    <!-- DEPENDENCIES -->
+<script src="../assets/js/network-listener.js"></script>
+<script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/public/Booking.js"></script>
+</body>
+</html>

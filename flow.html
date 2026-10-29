@@ -1,0 +1,403 @@
+<!-- TITLE: public/flow.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Customer Hub | REFLO</title>
+
+    <!-- 1. URL MASKER: Instantly strip "/public/flow.html" from browser address bar -->
+    <script>
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var biz = params.get('biz') || params.get('business');
+            if (biz && window.location.pathname.indexOf('flow.html') !== -1) {
+                window.history.replaceState({}, document.title, '/?biz=' + encodeURIComponent(biz));
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .public-hub-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .public-hub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .hub-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px 50px;
+            max-width: 480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .biz-hub-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 32px 24px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+        }
+
+        .biz-hub-logo-frame {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 16px;
+            border-radius: 26px;
+            border: 3px solid var(--primary);
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .biz-hub-logo-frame:active { transform: scale(0.95); }
+
+        .biz-hub-logo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .biz-welcome-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .biz-hub-title {
+            font-size: 1.45rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            color: var(--text-main);
+        }
+
+        .biz-hub-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            font-weight: 600;
+            margin: 0 0 10px;
+        }
+
+/* 1. ON-PAGE LOCATION BADGE */
+.biz-location-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    max-width: 100%;
+    margin-top: 4px;
+    user-select: none;
+    cursor: pointer; /* Indicates it can be tapped */
+    transition: all 0.2s ease;
+}
+
+.biz-location-badge:active {
+    transform: scale(0.97); /* Subtle touch feedback on mobile */
+}
+
+.biz-location-badge span:last-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 🟢 When tapped: expand smoothly to show the complete address */
+.biz-location-badge.expanded {
+    border-radius: 14px;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.biz-location-badge.expanded span:last-child {
+    white-space: normal;
+    word-break: break-word;
+}
+
+        .hub-actions-wrap {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .hub-action-card-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 22px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            transition: transform 0.15s ease, border-color 0.15s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .hub-action-card-btn:active {
+            transform: scale(0.97);
+            border-color: var(--primary);
+            background: var(--bg-body);
+        }
+
+        .btn-card-feedback {
+            border-color: var(--primary);
+        }
+
+        .hub-action-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .icon-star-bg {
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+        }
+
+        .icon-calendar-bg {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10b981;
+        }
+
+        .hub-action-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .hub-action-text strong {
+            display: block;
+            font-size: 1.05rem;
+            font-weight: 900;
+            letter-spacing: -0.3px;
+            margin-bottom: 2px;
+            color: var(--text-main);
+        }
+
+        .hub-action-text span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .hub-action-arrow {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--text-muted);
+        }
+
+        .public-hub-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* ======================================================================
+           2. DRAGGABLE & PINCH-ZOOM LIGHTBOX (No Clunky Buttons)
+           ====================================================================== */
+        .zoom-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 15, 30, 0.94);
+            backdrop-filter: blur(14px);
+            z-index: 999999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            overflow: hidden;
+            user-select: none;
+        }
+        .zoom-modal-backdrop.active {
+            display: flex;
+        }
+
+        /* Discreet Close button */
+        .zoom-close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: transform 0.15s, background 0.15s;
+        }
+        .zoom-close-btn:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.7); }
+
+        .zoom-hint-pill {
+            position: absolute;
+            bottom: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 20px;
+            pointer-events: none;
+            letter-spacing: 0.3px;
+        }
+
+        .zoom-viewport {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .zoom-viewport:active { cursor: grabbing; }
+
+        .zoomable-img {
+            max-width: 85vw;
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55);
+            transform-origin: center center;
+            will-change: transform;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="public-hub-wrapper">
+
+    <!-- HEADER -->
+    <header class="public-hub-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="../assets/images/reflo-icon.png" alt="REFLO" style="height: 22px; width: 22px; object-fit: contain;">
+            <span style="font-weight: 900; font-size: 0.95rem; color: var(--primary); letter-spacing: -0.5px;">REFLO</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="hub-container">
+        <!-- BUSINESS IDENTITY CARD -->
+        <section class="biz-hub-card">
+            <!-- Tap logo to open draggable / zoomable image viewer -->
+            <div class="biz-hub-logo-frame" title="Tap to inspect" onclick="PublicFlow.openZoomModal()">
+                <img id="bizHubLogo" src="../assets/images/default-business-logo.png" alt="Business Logo">
+            </div>
+            <span class="biz-welcome-label">WELCOME TO</span>
+            <h1 class="biz-hub-title" id="bizHubName">Customer Hub</h1>
+            <p class="biz-hub-desc" id="bizHubDesc">How was your experience with us today?</p>
+
+            <!-- ON-PAGE LOCATION BADGE (Does NOT navigate to Google Maps) -->
+           <div id="bizHubLocationBadge" class="biz-location-badge" style="display: none;" onclick="this.classList.toggle('expanded')" title="Tap to view full address">
+    <span>📍</span>
+    <span id="bizHubLocationText">Verified Location</span>
+</div>
+        </section>
+
+        <!-- ACTION BUTTONS -->
+        <div class="hub-actions-wrap">
+            <a href="review.html" id="btnLeaveFeedback" class="hub-action-card-btn btn-card-feedback">
+                <div class="hub-action-icon icon-star-bg">⭐</div>
+                <div class="hub-action-text">
+                    <strong>Leave Feedback</strong>
+                    <span>Share your experience with us</span>
+                </div>
+                <span class="hub-action-arrow">→</span>
+            </a>
+
+            <a href="booking.html" id="btnBookVisit" class="hub-action-card-btn">
+                <div class="hub-action-icon icon-calendar-bg">📅</div>
+                <div class="hub-action-text">
+                    <strong>Book a Visit</strong>
+                    <span>Schedule an appointment or visit</span>
+                </div>
+                <span class="hub-action-arrow">→</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- INTERACTIVE DRAG & PINCH-ZOOM LIGHTBOX (No buttons needed) -->
+    <div id="imageZoomModal" class="zoom-modal-backdrop">
+        <button type="button" class="zoom-close-btn" onclick="PublicFlow.closeZoomModal()" title="Close">✕</button>
+        
+        <div class="zoom-viewport" id="zoomViewport">
+            <img id="zoomTargetImg" class="zoomable-img" src="" alt="Enlarged Logo">
+        </div>
+
+        <div class="zoom-hint-pill">
+            ✋ Drag to pan • Pinch or Double-tap to zoom
+        </div>
+    </div>
+
+    <footer class="public-hub-footer">
+         <strong>REFLO </strong>Powered securely by <strong>HDC</strong>  • Feedback & Booking Platform
+    </footer>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/public/Flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+/* TITLE: assets/css/responsive.css */
+
+/* ==========================================================================
+   1. SMALL PHONES & MICRO SCREENS (320px - 360px)
+   ========================================================================== */
+@media (max-width: 360px) {
+    /* Base typography adjustments */
+    h1, .slide-card-box h1, .biz-hub-title {
+        font-size: 1.35rem !important;
+        letter-spacing: -0.5px !important;
+    }
+
+    h2, .step-heading {
+        font-size: 1.15rem !important;
+    }
+
+    p, .form-subtext, .biz-hub-desc {
+        font-size: 0.82rem !important;
+    }
+
+    /* Container padding reduction */
+    .container,
+    .dashboard-container,
+    .admin-container,
+    .profile-page-container,
+    .sub-page-container,
+    .bookings-page-container,
+    .activity-page-container,
+    .hub-container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    /* Card padding compression */
+    .card,
+    .settings-card,
+    .onboard-step-card,
+    .register-card-box,
+    .login-card-box,
+    .auth-card-box,
+    .biz-hub-card {
+        padding: 22px 14px !important;
+        border-radius: 20px !important;
+    }
+
+    /* 3-Column Gateway Navigation Grids */
+    .action-cards-grid-3,
+    .gateway-grid,
+    .nav-grid-3,
+    .action-grid-3 {
+        gap: 6px !important;
+    }
+
+    .gateway-action-card,
+    .gateway-card,
+    .nav-shortcut {
+        padding: 14px 4px !important;
+        border-radius: 16px !important;
+    }
+
+    .gateway-action-card i,
+    .gateway-card i,
+    .nav-shortcut i {
+        font-size: 1.5rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .gateway-action-card span,
+    .gateway-card span,
+    .nav-shortcut span {
+        font-size: 0.65rem !important;
+    }
+
+    /* Buttons */
+    .btn,
+    .btn-primary,
+    .btn-reflo-primary,
+    .btn-reflo-cta {
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Form rows collapse */
+    .form-row-2col,
+    .form-row,
+    .stats-2x2-grid,
+    .metrics-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .biz-details-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ==========================================================================
+   2. STANDARD SMARTPHONES (375px - 414px)
+   ========================================================================== */
+@media (min-width: 375px) and (max-width: 480px) {
+    .gateway-action-card,
+    .gateway-card,
+    .nav-shortcut {
+        padding: 18px 8px;
+    }
+
+    .gateway-action-card i,
+    .gateway-card i,
+    .nav-shortcut i {
+        font-size: 1.75rem;
+    }
+
+    .gateway-action-card span,
+    .gateway-card span,
+    .nav-shortcut span {
+        font-size: 0.72rem;
+    }
+}
+
+/* ==========================================================================
+   3. TABLETS & MID-SIZE SCREENS (768px - 1023px)
+   ========================================================================== */
+@media (min-width: 768px) {
+    /* Expanded containers */
+    .container,
+    .dashboard-container,
+    .profile-page-container,
+    .sub-page-container,
+    .bookings-page-container {
+        max-width: 720px;
+    }
+
+    .admin-container,
+    .admin-settings-container,
+    .admin-directory-container,
+    .activity-page-container,
+    .console-container {
+        max-width: 860px;
+    }
+
+    /* 4-Column Stat Rows */
+    .stats-2x2-grid,
+    .metrics-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    .metrics-master-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* Plan Pricing Slider turns into standard grid */
+    .plans-slider-wrapper {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        overflow: visible !important;
+        gap: 16px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .plan-card-box {
+        flex: none !important;
+    }
+
+    /* Forms side-by-side */
+    .form-row-2col,
+    .form-row {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Modal Sizing */
+    .modal-box {
+        max-width: 520px !important;
+        padding: 35px 30px !important;
+    }
+
+    /* Business Directory Grid */
+    .biz-details-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* Public Flow Container */
+    .hub-container {
+        max-width: 500px;
+    }
+}
+
+/* ==========================================================================
+   4. DESKTOPS & WIDE MONITORS (1024px - 1440px+)
+   ========================================================================== */
+@media (min-width: 1024px) {
+    /* Maximum layout bounds */
+    .container,
+    .dashboard-container,
+    .profile-page-container,
+    .sub-page-container,
+    .bookings-page-container {
+        max-width: 1100px;
+    }
+
+    .admin-container,
+    .admin-settings-container,
+    .admin-directory-container,
+    .activity-page-container,
+    .console-container {
+        max-width: 960px;
+    }
+
+    /* Admin 5-Gateway Grid becomes 5 equal columns or 3x2 clean layout */
+    .admin-gateway-grid-5 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* Hover effects enabled for mouse pointers */
+    .hub-action-card-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .clickable-feedback-row:hover {
+        transform: translateX(4px);
+        border-color: var(--primary);
+    }
+
+    .adm-ticket-card:hover,
+    .biz-directory-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Chat Stream & Composer Layout */
+    .stream-feed {
+        max-height: 520px !important;
+    }
+
+    .composer-studio-card {
+        padding: 28px !important;
+    }
+}
+
+/* ==========================================================================
+   5. PRINT STYLES (For QR Stands & Counter Displays)
+   ========================================================================== */
+@media print {
+    /* Hide everything except printable area */
+    body * {
+        visibility: hidden;
+    }
+
+    #printableArea,
+    #printableArea * {
+        visibility: visible;
+    }
+
+    #printableArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .master-header,
+    .bottom-nav,
+    .nav-utility-card,
+    .btn,
+    .theme-toggle {
+        display: none !important;
+    }
+}

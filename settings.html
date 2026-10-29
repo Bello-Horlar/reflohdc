@@ -1,0 +1,497 @@
+<!-- TITLE: admin/settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO MASTER | Global Platform Settings</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        :root {
+            --adm-primary: #6366f1;
+            --adm-primary-hover: #4f46e5;
+            --adm-gradient: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        }
+
+        .admin-master-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: #0f172a;
+            color: #ffffff;
+            border-bottom: 1px solid #1e293b;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-nav-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            letter-spacing: -0.5px;
+        }
+
+        .admin-settings-container {
+            padding: 0 20px 100px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* Hero Banner */
+        .admin-hero-card {
+            background: var(--adm-gradient);
+            color: #ffffff;
+            border-radius: 28px;
+            padding: 24px 28px;
+            margin: 20px 0 25px;
+            box-shadow: 0 12px 30px rgba(67, 56, 202, 0.25);
+        }
+
+        .admin-hero-card h1 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin: 0 0 6px;
+        }
+
+        .admin-hero-card p {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin: 0;
+        }
+
+        /* Plan Pricing Config Cards */
+        .plans-price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .plans-price-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .plan-config-box {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .plan-config-box.active-tier {
+            border-color: var(--adm-primary);
+        }
+
+        .plan-box-head {
+            font-size: 1.1rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-stepper-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0 16px;
+        }
+
+        .btn-stepper {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-stepper:active { transform: scale(0.92); }
+
+        .price-num-input {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 900;
+            outline: none;
+        }
+
+        /* Section 2 Controls Grid */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Checkbox / Toggle Grid */
+        .feature-checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 550px) {
+            .feature-checklist-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--bg-body);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--adm-primary);
+        }
+
+        /* Toggle Switches */
+        .toggle-switch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .toggle-switch-row:last-child { border-bottom: none; }
+
+        .toggle-switch-row strong {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+        .toggle-switch-row small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border);
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--adm-primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn-adm-save-all {
+            background: #4f46e5 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 16px 28px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+            transition: transform 0.15s;
+        }
+        .btn-adm-save-all:active { transform: scale(0.98); }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <!-- MASTER ADMIN HEADER -->
+    <header class="admin-master-header">
+        <button class="admin-nav-btn" onclick="location.href='dashboard.html'">
+            <span>◀ REFLO MASTER</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 50%; cursor: pointer; color: white; font-size: 1.1rem;">🌓</button>
+    </header>
+
+    <main class="admin-settings-container">
+        <!-- HERO BANNER -->
+        <section class="admin-hero-card">
+            <h1>Global Platform Configuration</h1>
+            <p>Manage subscription pricing, trial duration, currency controls, exchange rates, and feature entitlements without code redeployment.</p>
+        </section>
+
+        <!-- 1. PRICING & PLANS MANAGEMENT -->
+        <div class="section-label">1. Live Plan Pricing ($ / Month)</div>
+        <div class="plans-price-grid">
+            
+            <!-- STARTER PLAN -->
+            <div class="plan-config-box">
+                <div class="plan-box-head">
+                    <span>Starter Plan</span>
+                    <small class="text-muted">Small Biz</small>
+                </div>
+                <label style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">MONTHLY PRICE (USD)</label>
+                <div class="price-stepper-wrap">
+                    <button type="button" class="btn-stepper" onclick="AdminSettings.adjustPrice('starter', -1)">−</button>
+                    <input type="number" id="priceStarterInput" class="price-num-input" value="19" min="1">
+                    <button type="button" class="btn-stepper" onclick="AdminSettings.adjustPrice('starter', 1)">+</button>
+                </div>
+                <small class="text-muted" style="font-size: 0.75rem; line-height: 1.3;">1 location, basic review flow & bookings.</small>
+            </div>
+
+            <!-- GROWTH PLAN (MOST POPULAR) -->
+            <div class="plan-config-box active-tier">
+                <div class="plan-box-head">
+                    <span style="color: var(--adm-primary);">Growth Plan</span>
+                    <span class="badge" style="background: var(--adm-primary); color: #fff; font-size: 0.65rem;">POPULAR</span>
+                </div>
+                <label style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">MONTHLY PRICE (USD)</label>
+                <div class="price-stepper-wrap">
+                    <button type="button" class="btn-stepper" onclick="AdminSettings.adjustPrice('growth', -1)">−</button>
+                    <input type="number" id="priceGrowthInput" class="price-num-input" value="39" min="1">
+                    <button type="button" class="btn-stepper" onclick="AdminSettings.adjustPrice('growth', 1)">+</button>
+                </div>
+                <small class="text-muted" style="font-size: 0.75rem; line-height: 1.3;">Advanced analytics, automated follow-ups & reports.</small>
+            </div>
+
+            <!-- PRO UNLIMITED PLAN -->
+            <div class="plan-config-box">
+                <div class="plan-box-head">
+                    <span style="color: #22c55e;">PRO Plan</span>
+                    <span class="badge" style="background: rgba(34, 197, 94, 0.15); color: #22c55e; font-size: 0.65rem;">UNLIMITED</span>
+                </div>
+                <label style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">MONTHLY PRICE (USD)</label>
+                <div class="price-stepper-wrap">
+                    <button type="button" class="btn-stepper" onclick="AdminSettings.adjustPrice('pro', -1)">−</button>
+                    <input type="number" id="priceProInput" class="price-num-input" value="79" min="1">
+                    <button type="button" class="btn-stepper" onclick="AdminSettings.adjustPrice('pro', 1)">+</button>
+                </div>
+                <small class="text-muted" style="font-size: 0.75rem; line-height: 1.3;">Unlimited locations, reviews, bookings & API access.</small>
+            </div>
+
+        </div>
+<!-- 2. TRIAL DURATION, DISCOUNTS & CURRENCY CONVERSION -->
+        <div class="section-label">2. Free Trial, Discounts & Currency Conversion</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div class="rules-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                
+                <div class="input-group">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                        Default Trial Period (Days)
+                    </label>
+                    <input type="number" id="trialDaysInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 800;" value="30" min="1" max="90">
+                    <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Default: 30 DAYS (Growth Plan trial)</small>
+                </div>
+
+                <div class="input-group">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                        Annual Discount (%)
+                    </label>
+                    <input type="number" id="annualDiscountInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 800;" value="20" min="0" max="50">
+                    <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Discount applied for 12 months upfront</small>
+                </div>
+
+                <!-- DYNAMIC EXCHANGE RATE INPUT -->
+                <div class="input-group">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--adm-primary); text-transform: uppercase; margin-bottom: 6px;">
+                        USD to NGN Exchange Rate (₦ / $1)
+                    </label>
+                    <input type="number" id="exchangeRateInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--adm-primary); background: var(--bg-body); color: var(--text-main); font-weight: 800;" value="1500" min="100">
+                    <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Rate used to calculate Naira charges during checkout</small>
+                </div>
+
+                <!-- 🟢 4TH BOX: PAYSTACK GATEWAY SETTLEMENT CURRENCY -->
+                <div class="input-group">
+                    <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--adm-primary); text-transform: uppercase; margin-bottom: 6px;">
+                        Paystack Gateway Currency
+                    </label>
+                    <select id="gatewayCurrencySelect" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--adm-primary); background: var(--bg-body); color: var(--text-main); font-weight: 800;">
+                        <option value="NGN" selected>NGN (₦) — Nigerian Naira (Active Now)</option>
+                        <option value="USD">USD ($) — US Dollar (Switch When Domiciliary Approved)</option>
+                    </select>
+                    <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">Controls whether Paystack bills in Naira or Dollars</small>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 3. CURRENCY AVAILABILITY SWITCHER -->
+        <div class="section-label">3. Global & Regional Currency Availability</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 15px; font-weight: 600;">
+                Select currencies enabled for business registration and Paystack checkouts:
+            </p>
+            <div class="feature-checklist-grid" id="currencyTogglesGrid">
+                <!-- Injected dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- 4. FEATURE ENTITLEMENT MATRIX -->
+        <div class="section-label">4. Platform Feature Entitlements</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div class="toggle-switch-row">
+                <div>
+                    <strong>Online Customer Booking Engine</strong>
+                    <small>Enable appointment scheduling across customer hubs</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="featBookingsToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch-row">
+                <div>
+                    <strong>Automated Customer Follow-Up Workflows</strong>
+                    <small>Auto-alert businesses when low ratings are submitted</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="featFollowUpToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch-row">
+                <div>
+                    <strong>Analytics Report CSV & PDF Exports</strong>
+                    <small>Allow Growth and Pro businesses to download reports</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="featExportsToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch-row">
+                <div>
+                    <strong>Custom Brand Logo Watermark</strong>
+                    <small>Allow Pro users to show custom white-labeled logos</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="featCustomBrandingToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 5. NOTIFICATION & PLATFORM CONTROLS -->
+        <div class="section-label">5. System & Registration Operations</div>
+        <div class="settings-card" style="margin-bottom: 30px;">
+            <div class="toggle-switch-row">
+                <div>
+                    <strong>Allow New Business Registrations</strong>
+                    <small>Turn off to temporarily restrict new signups during audits</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="opAllowSignupsToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch-row">
+                <div>
+                    <strong>System Maintenance Mode</strong>
+                    <small>Lock platform for routine migrations or upgrades</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="opMaintenanceToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                    Administrative Alert Email
+                </label>
+                <input type="email" id="adminAlertEmailInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 600;" placeholder="admin@reflo.com">
+            </div>
+        </div>
+
+        <!-- SAVE ALL SETTINGS ACTION -->
+        <button type="button" class="btn-adm-save-all" id="saveAllSettingsBtn" onclick="AdminSettings.saveAll()">
+            Save Global Platform Settings
+        </button>
+
+        <!-- ADMIN QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 40px;">Admin Gateway</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏢</i><span>Master</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+                <a href="businesses.html" class="nav-shortcut"><i>📋</i><span>Directory</span></a>
+                <a href="settings.html" class="nav-shortcut"><i>⚙️</i><span>Pricing</span></a>
+                <a href="activity.html" class="nav-shortcut"><i>📜</i><span>Logs</span></a>
+                <a href="../app/dashboard.html" class="nav-shortcut"><i>👤</i><span>User App</span></a>
+            </div>
+        </div>
+    </main>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/admin/Settings.js"></script>
+</body>
+</html>

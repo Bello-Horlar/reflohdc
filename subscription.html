@@ -1,0 +1,561 @@
+<!-- TITLE: app/subscription.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Subscription & Plans</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <!-- Paystack Inline Fallback SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+        .sub-page-container {
+            padding: 0 20px 100px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .status-hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .plan-title-wrap h2 {
+            font-size: 1.35rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-top: 4px;
+        }
+
+        .plan-status-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .status-trial { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+        .status-active { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .status-expired { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .status-cancelled { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+        .status-payment_failed { background: rgba(220, 38, 38, 0.2); color: #dc2626; }
+
+        .status-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: var(--bg-body);
+            padding: 14px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 550px) {
+            .status-meta-grid { grid-template-columns: 1fr; }
+        }
+
+        .status-meta-item small {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .status-meta-item strong {
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        .duration-container {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 5px;
+            margin: 15px 0 20px;
+            border: 1px solid var(--border);
+            gap: 5px;
+        }
+
+        .dur-btn-tab {
+            flex: 1;
+            padding: 10px 4px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 0.78rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .dur-btn-tab.active {
+            background: var(--primary);
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .save-badge {
+            display: block;
+            font-size: 0.58rem;
+            color: #22c55e;
+            font-weight: 900;
+            margin-top: 1px;
+        }
+        .dur-btn-tab.active .save-badge { color: #ffffff; }
+
+        .plans-slider-wrapper {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 10px 4px 25px;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+        .plans-slider-wrapper::-webkit-scrollbar { display: none; }
+
+        .plan-card-box {
+            flex: 0 0 88%;
+            scroll-snap-align: center;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 28px;
+            padding: 28px 22px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .plans-slider-wrapper {
+                overflow: visible;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                padding: 10px 0 25px;
+            }
+            .plan-card-box { flex: none; }
+        }
+
+        .popular-plan-card {
+            border: 2.5px solid var(--primary);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+        }
+
+        .most-popular-tag {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 900;
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .plan-header-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .plan-price-large {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 12px 0 16px;
+            line-height: 1;
+        }
+
+        .plan-price-large small {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0;
+        }
+
+        .feature-checklist {
+            list-style: none;
+            margin: 0 0 20px;
+            padding: 0;
+            flex: 1;
+        }
+
+        .feature-checklist li {
+            font-size: 0.82rem;
+            line-height: 1.45;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .feature-checklist li strong { font-weight: 800; }
+        .unlimited-badge { color: #22c55e; font-weight: 900; }
+
+        .history-table-wrap {
+            overflow-x: auto;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+            min-width: 540px;
+        }
+
+        .history-table th {
+            background: var(--bg-body);
+            padding: 12px 16px;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+        }
+        .history-table tr:last-child td { border-bottom: none; }
+
+        .cancel-info-card {
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cancel-info-card p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <!-- MASTER HEADER -->
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='dashboard.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="sub-page-container">
+        <!-- TITLE SECTION -->
+        <div class="master-page-title" style="padding: 20px 0 12px;">
+            <h1 style="font-size: 1.55rem; font-weight: 900; letter-spacing: -1px;">Subscription & Plans</h1>
+            <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Upgrade your growth, manage billing duration, and inspect verified receipts</p>
+        </div>
+
+        <!-- 1. LIVE SUBSCRIPTION STATUS HERO -->
+        <section class="status-hero-card">
+            <div class="status-top-bar">
+                <div class="plan-title-wrap">
+                    <small style="font-size: 0.68rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Active Membership</small>
+                    <h2 id="heroPlanTitle">Loading Plan...</h2>
+                </div>
+                <span id="heroStatusPill" class="plan-status-pill status-trial">Checking Status...</span>
+            </div>
+
+            <div class="status-meta-grid">
+                <div class="status-meta-item">
+                    <small>Time Remaining</small>
+                    <strong id="heroCountdownText">Calculating...</strong>
+                </div>
+                <div class="status-meta-item">
+                    <small>Period (Start — End)</small>
+                    <strong id="heroDateRange">-- to --</strong>
+                </div>
+                <div class="status-meta-item">
+                    <small>Billing Currency</small>
+                    <strong id="heroCurrencyText">USD ($)</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. DURATION SELECTOR -->
+        <div class="section-label">Select Subscription Duration</div>
+        <div class="duration-container">
+            <button type="button" class="dur-btn-tab active" onclick="SubscriptionApp.setDuration(1, this)">
+                1 Month
+                <span class="save-badge">Standard</span>
+            </button>
+            <button type="button" class="dur-btn-tab" onclick="SubscriptionApp.setDuration(3, this)">
+                3 Months
+                <span class="save-badge">Save 5%</span>
+            </button>
+            <button type="button" class="dur-btn-tab" onclick="SubscriptionApp.setDuration(6, this)">
+                6 Months
+                <span class="save-badge">Save 10%</span>
+            </button>
+            <button type="button" class="dur-btn-tab" onclick="SubscriptionApp.setDuration(12, this)">
+                12 Months
+                <span class="save-badge">Save 20%</span>
+            </button>
+        </div>
+
+<!-- 3. AVAILABLE PLANS (BALANCED TIERS - NO FORCED SELECTION) -->
+        <div class="plans-slider-wrapper">
+            
+            <!-- STARTER PLAN -->
+            <div class="plan-card-box">
+                <div class="plan-header-title">Starter</div>
+                <p class="text-muted" style="font-size: 0.78rem; margin: 0;">Essential tools for solo operators & small businesses</p>
+                <div class="plan-price-large">
+                    <span class="currency-symbol">$</span><span id="starterPriceDisplay">19</span>
+                    <small id="starterPeriodDisplay">/mo</small>
+                </div>
+                <ul class="feature-checklist">
+                    <li>✓ <strong>Up to 30 customer reviews / month</strong></li>
+                    <li>✓ <strong>Up to 20 appointment bookings / month</strong></li>
+                    <li>✓ <strong>1 Customer photo upload per booking (No video)</strong></li>
+                    <li>✓ In-app notification inbox only</li>
+                    <li>✓ Customer contact & lead capture</li>
+                    <li>✓ Universal QR code & shareable link</li>
+                    <li>✓ Basic performance analytics</li>
+                    <li>✓ Standard email customer support</li>
+                </ul>
+                <button type="button" class="btn-outline" style="width: 100%; padding: 13px;" onclick="SubscriptionApp.checkout('starter')">
+                    Choose Starter
+                </button>
+            </div>
+
+            <!-- GROWTH PLAN -->
+            <div class="plan-card-box">
+                <div class="plan-header-title" style="color: var(--primary);">Growth</div>
+                <p class="text-muted" style="font-size: 0.78rem; margin: 0;">Automated workflow suite for expanding & busy businesses</p>
+                <div class="plan-price-large">
+                    <span class="currency-symbol">$</span><span id="growthPriceDisplay">39</span>
+                    <small id="growthPeriodDisplay">/mo</small>
+                </div>
+                <ul class="feature-checklist">
+                    <li>✓ <strong>Up to 120 customer reviews / month</strong></li>
+                    <li>✓ <strong>Up to 60 appointment bookings / month</strong></li>
+                    <li>✓ 📸 <strong>Media uploads: Up to 5 photos OR 1 video clip</strong></li>
+                    <li>✓ <strong>Live in-app toasts & real-time dashboard alerts</strong></li>
+                    <li>✓ <strong>Urgent low-rating recovery alerts (1–3 stars)</strong></li>
+                    <li>✓ <strong>Interactive booking calendar & duration rules</strong></li>
+                    <li>✓ <strong>Automated customer follow-up workflows</strong></li>
+                    <li>✓ <strong>Export reports & customer contacts (CSV / Excel)</strong></li>
+                    <li>✓ <strong>Priority customer support</strong></li>
+                </ul>
+                <button type="button" class="btn-primary" style="width: 100%; padding: 13px;" onclick="SubscriptionApp.checkout('growth')">
+                    Choose Growth
+                </button>
+            </div>
+
+            <!-- PRO PLAN -->
+            <div class="plan-card-box">
+                <div class="plan-header-title" style="color: #22c55e;">PRO UNLIMITED</div>
+                <p class="text-muted" style="font-size: 0.78rem; margin: 0;">Zero commercial limits with priority phone wake engine</p>
+                <div class="plan-price-large">
+                    <span class="currency-symbol">$</span><span id="proPriceDisplay">79</span>
+                    <small id="proPeriodDisplay">/mo</small>
+                </div>
+                <ul class="feature-checklist">
+                    <li>✓ 📲 <span class="unlimited-badge">PRO EXCLUSIVE:</span> <strong>Wakes phone in background with intense 4-pulse vibration</strong></li>
+                    <li>✓ <span class="unlimited-badge">UNLIMITED</span> <strong>Customer Reviews / month</strong></li>
+                    <li>✓ <span class="unlimited-badge">UNLIMITED</span> <strong>Appointment Bookings / month</strong></li>
+                    <li>✓ 🎥 <span class="unlimited-badge">UNLIMITED</span> <strong>HD Media: Up to 10 photos & videos</strong></li>
+                    <li>✓ <strong>Remove REFLO Footer Watermark (White-label)</strong></li>
+                    <li>✓ <strong>Live Outgoing Webhooks (Zapier, Make, CRM sync)</strong></li>
+                    <li>✓ <strong>REST API Secret Key & Custom Software Access</strong></li>
+                    <li>✓ <strong>24/7 Dedicated Priority VIP Support</strong></li>
+                </ul>
+                <button type="button" class="btn-outline" style="width: 100%; padding: 13px;" onclick="SubscriptionApp.checkout('pro')">
+                    Choose Pro Unlimited
+                </button>
+            </div>
+
+        </div>
+
+        <!-- 4. PAYMENT HISTORY TABLE -->
+        <div class="section-label">Verified Payment Receipts</div>
+        <div class="history-table-wrap">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Plan</th>
+                        <th>Duration</th>
+                        <th>Amount</th>
+                        <th>Reference</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentHistoryTbody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 22px; color: var(--text-muted);">
+                            Loading payment history...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 5. CANCELLATION & DATA SAFETY GUARANTEE -->
+        <div class="cancel-info-card">
+            <div>
+                <strong style="font-size: 0.82rem; display: block; margin-bottom: 2px;">Your Business Data is Always Safe</strong>
+                <p>If your subscription or trial ends, your collected feedback, customer contacts, and bookings are never deleted. You can renew whenever you are ready.</p>
+            </div>
+            <button type="button" class="btn-outline" style="font-size: 0.72rem; padding: 7px 12px; white-space: nowrap;" onclick="SubscriptionApp.showCancelPolicy()">
+                Policy Info
+            </button>
+        </div>
+
+<!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 35px;">Quick Navigation</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏠</i><span>Home</span></a>
+                <a href="feedback.html" class="nav-shortcut"><i>⭐</i><span>Reviews</span></a>
+                <a href="bookings.html" class="nav-shortcut"><i>📅</i><span>Bookings</span></a>
+                <a href="profile.html" class="nav-shortcut"><i>⚙️</i><span>Profile</span></a>
+                <a href="share.html" class="nav-shortcut"><i>🔳</i><span>QR Hub</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+            </div>
+        </div>
+    </main>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+<style>
+        /* =====================================================================
+           DEAD-CENTER SCREEN MODAL OVERLAY (Guaranteed Center Display)
+           ===================================================================== */
+        #currencyNoticeModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .currency-modal-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 28px;
+            padding: 34px 26px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin: auto;
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+
+    <!-- ======================================================================
+         OFFICIAL PAYMENT PROCESSING NOTICE (No Country Names • No Cancel Button)
+         ====================================================================== -->
+    <div id="currencyNoticeModal">
+        <div class="currency-modal-card">
+            <div style="font-size: 2.8rem; margin-bottom: 10px;">🔒</div>
+            <h2 style="font-size: 1.35rem; font-weight: 900; margin-bottom: 6px; letter-spacing: -0.5px;">
+                Secure Checkout & Payment Notice
+            </h2>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 20px; font-weight: 600;">
+                Transparent international payment processing
+            </p>
+
+            <div style="background: var(--bg-body); border: 1.5px solid var(--border); border-radius: 20px; padding: 18px; text-align: left; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted); font-weight: 700;">Selected Plan:</span>
+                    <strong id="modalPlanName" style="color: var(--primary);">PRO Plan (1 mo)</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;">
+                    <span style="color: var(--text-muted); font-weight: 700;">Plan USD Total:</span>
+                    <strong id="modalLocalDisplay" style="color: var(--text-main);">$79.00 USD</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.95rem;">
+                    <span style="color: var(--text-muted); font-weight: 800;">Processed At Gateway:</span>
+                    <strong id="modalGatewayDisplay" style="color: #22c55e;">₦118,500 NGN</strong>
+                </div>
+            </div>
+
+            <!-- 🟢 Clean, Professional Copy (No Country Mentioned) -->
+            <div style="text-align: left; font-size: 0.8rem; color: var(--text-main); line-height: 1.55; margin-bottom: 24px;">
+                <p style="margin-bottom: 10px;">
+                    💳 <strong>Why the gateway currency differs:</strong> REFLO's primary payment processor processes billing in <strong><span id="modalMerchantCurrency">NGN</span></strong>. On the checkout screen, you will see the exact converted equivalent shown above.
+                </p>
+                <p style="margin-bottom: 10px;">
+                    🌍 <strong>Your bank auto-converts:</strong> You can pay with your ordinary local card (Visa, Mastercard, Verve, Amex). Your bank will debit your account in your regular local currency at official live rates.
+                </p>
+                <p style="color: #22c55e; font-weight: 800; margin: 0;">
+                    🛡️ <strong>100% Guarantee:</strong> Your membership activates immediately upon payment with all features unlocked.
+                </p>
+            </div>
+
+            <!-- Single Action Button (No Cancel Button) -->
+            <button type="button" class="btn-primary" id="btnModalProceed" style="padding: 16px; font-size: 1.05rem; font-weight: 900; width: 100%;">
+                Proceed to Secure Checkout →
+            </button>
+        </div>
+    </div>
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/user/Subscription.js"></script>
+</body>
+</html>

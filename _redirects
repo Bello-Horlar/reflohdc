@@ -1,0 +1,49 @@
+# ==============================================================================
+# 1. DYNAMIC SOCIAL PREVIEWS FOR WHATSAPP, TELEGRAM & SOCIAL MEDIA
+# (Routes /r/:slug through the Edge Function to show custom business logo & location)
+# ==============================================================================
+/r/:biz         https://jqsdiyrvdzwmqazdotci.supabase.co/functions/v1/share-preview?biz=:biz   200!
+/b/:biz         https://jqsdiyrvdzwmqazdotci.supabase.co/functions/v1/share-preview?biz=:biz   200!
+
+# ==============================================================================
+# 2. SHORT ROOT HUB REWRITE (When ?biz= query parameter is used)
+# ==============================================================================
+/  biz=:biz     /public/flow.html?biz=:biz     200!
+
+# ==============================================================================
+# 3. CLEAN CUSTOMER URLS (Both clean routes and .html fail-safes)
+# ==============================================================================
+/review         /public/review.html            200
+/review.html    /public/review.html            200
+/feedback       /public/review.html            200
+/booking        /public/booking.html           200
+/booking.html   /public/booking.html           200
+/book           /public/booking.html           200
+/success        /public/success.html           200
+/success.html   /public/success.html           200
+/flow           /public/flow.html              200
+/flow.html      /public/flow.html              200
+
+# ==============================================================================
+# 4. IN-APP SHORTCUTS & USER PAGES
+# ==============================================================================
+/dashboard      /app/dashboard.html            200
+/subscription   /app/subscription.html         200
+/profile        /app/profile.html              200
+/share          /app/share.html                200
+/support        /app/support.html              200
+/login          /login.html                    200
+/register       /register.html                 200
+
+# ==============================================================================
+# 5. DIRECT FOLDER PASSTHROUGHS
+# ==============================================================================
+/app/*          /app/:splat                    200
+/admin/*        /admin/:splat                  200
+/public/*       /public/:splat                 200
+/assets/*       /assets/:splat                 200
+
+# ==============================================================================
+# 6. GLOBAL 404 FALLBACK (MUST ALWAYS BE THE VERY LAST LINE)
+# ==============================================================================
+/*              /404.html                      404

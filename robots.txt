@@ -1,0 +1,16 @@
+/* TITLE: robots.txt */
+
+# Allow search engines to index public customer hubs and landing pages
+User-agent: *
+Allow: /
+Allow: /public/
+Allow: /r/
+Allow: /index.html
+
+# Hide private customer data, owner dashboards, and backend consoles
+Disallow: /app/
+Disallow: /admin/
+Disallow: /supabase/
+
+# Point to your active sitemap
+Sitemap: https://reflohdc.netlify.app/sitemap.xml

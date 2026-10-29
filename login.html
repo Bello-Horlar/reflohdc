@@ -1,0 +1,409 @@
+<!-- TITLE: login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Login to Your Dashboard</title>
+<!-- INSTANT AUTH BYPASS: Skip login if user already has an active session -->
+    <script>
+        (function() {
+            // If user just logged out, stay on login page
+            if (window.location.search.indexOf('logout=true') !== -1) return;
+
+            try {
+                for (var i = 0; i < localStorage.length; i++) {
+                    var key = localStorage.key(i);
+                    if (key && key.indexOf('auth-token') !== -1) {
+                        var raw = localStorage.getItem(key);
+                        if (!raw) continue;
+                        var session = JSON.parse(raw);
+                        if (session && (session.user || session.currentSession)) {
+                            var role = localStorage.getItem('reflo_user_role');
+                            var target = (role === 'admin') ? 'admin/dashboard.html' : 'app/dashboard.html';
+                            window.location.replace(target);
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        .login-page-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        /* Distant Header */
+        .login-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-left-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-back-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 0 4px 0 0;
+            display: flex;
+            align-items: center;
+        }
+        .title-back-btn:active { transform: scale(0.85); }
+
+        .login-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px 60px;
+        }
+
+        .login-card-box {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 32px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        /* IN-APP MOBILE ERROR BANNER (NO URL POPUPS) */
+        .auth-error-banner {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1.5px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            text-align: left;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .input-group-item {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .password-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .log-input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .log-input-field:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-toggle-pwd {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 4px;
+        }
+
+        .oauth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .oauth-divider::before, .oauth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+        .oauth-divider:not(:empty)::before { margin-right: 12px; }
+        .oauth-divider:not(:empty)::after { margin-left: 12px; }
+
+        .form-options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0 24px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .remember-me-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .remember-me-label input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .link-forgot {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .link-forgot:hover { color: var(--primary); }
+
+        .btn-login-submit {
+            width: 100%;
+            padding: 16px;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.15s;
+        }
+        .btn-login-submit:active { transform: scale(0.98); }
+        .btn-login-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body class="login-page-wrapper">
+
+    <!-- HEADER -->
+    <header class="login-header">
+        <div class="header-left-group">
+            <button class="title-back-btn" onclick="location.href='index.html'" title="Back to Home">❮</button>
+            <img src="assets/images/reflo-icon.png" alt="REFLO" style="height: 28px; width: 28px; object-fit: contain;">
+            <span style="font-weight: 900; color: var(--primary); font-size: 1.15rem; letter-spacing: -0.5px;">REFLO</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="login-main">
+        <div class="login-card-box">
+            <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 6px;">Welcome Back</h1>
+            <p style="color: var(--text-muted); font-size: 0.88rem; font-weight: 600; margin-bottom: 24px;">Sign in to your customer feedback & booking dashboard.</p>
+
+            <!-- IN-APP ERROR BANNER (Replaces browser alert) -->
+            <div id="loginErrorBanner" class="auth-error-banner">
+                <span id="loginErrorText">Invalid email or password.</span>
+            </div>
+
+            <div class="oauth-divider">sign in with email</div>
+
+            <form id="loginForm" onsubmit="LoginApp.handleLogin(event)">
+                
+                <!-- Email Address -->
+                <div class="input-group-item">
+                    <label>Email Address *</label>
+                    <input type="email" id="loginEmail" class="log-input-field" placeholder="name@business.com" required autocomplete="email" oninput="LoginApp.clearError()">
+                </div>
+
+                <!-- Password -->
+                <div class="input-group-item">
+                    <label>Password *</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="loginPassword" class="log-input-field" placeholder="••••••••" required autocomplete="current-password" oninput="LoginApp.clearError()">
+                        <button type="button" class="btn-toggle-pwd" onclick="LoginApp.togglePasswordVisibility()">👁️</button>
+                    </div>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="form-options-row">
+                    <label class="remember-me-label">
+                        <input type="checkbox" id="rememberMeCheckbox" checked>
+                        <span>Remember me</span>
+                    </label>
+                    <a href="forgot-password.html" class="link-forgot">Forgot password?</a>
+                </div>
+
+                <!-- Primary Login Button -->
+                <button type="submit" class="btn-login-submit" id="submitLoginBtn">
+                    Login to Dashboard
+                </button>
+            </form>
+
+            <!-- Register Link -->
+            <div style="margin-top: 24px; font-size: 0.88rem; font-weight: 700;">
+                New to REFLO? <a href="register.html" style="color: var(--primary); text-decoration: none;">Start 30-Day Free Trial</a>
+            </div>
+
+            <p class="reflo-powered-tag">
+                <em>REFLO powered by HDC</em>
+            </p>
+        </div>
+    </main>
+
+    <!-- DEPENDENCIES -->
+<script src="assets/js/network-listener.js"></script>
+<script src="assets/js/portal.js"></script>
+<script src="assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        const LoginApp = {
+            async init() {
+                try {
+                    const { data: { session } } = await db.auth.getSession();
+                    if (session && session.user) {
+                        await this.redirectByRole(session.user.id);
+                    }
+                } catch (err) {
+                    console.log("No active session resumed:", err);
+                }
+            },
+
+            showError(msg) {
+                const banner = document.getElementById('loginErrorBanner');
+                const text = document.getElementById('loginErrorText');
+                if (banner && text) {
+                    text.innerText = msg;
+                    banner.style.display = 'block';
+                }
+                if (typeof App !== 'undefined' && App.toast) {
+                    App.toast(msg, 'error');
+                }
+            },
+
+            clearError() {
+                const banner = document.getElementById('loginErrorBanner');
+                if (banner) {
+                    banner.style.display = 'none';
+                }
+            },
+
+            togglePasswordVisibility() {
+                const input = document.getElementById('loginPassword');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                } else {
+                    input.type = 'password';
+                }
+            },
+
+            async handleLogin(e) {
+                e.preventDefault();
+                this.clearError();
+
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                const btn = document.getElementById('submitLoginBtn');
+
+                btn.innerText = "Authenticating...";
+                btn.disabled = true;
+
+                try {
+                    // 1. Authenticate with Supabase Auth
+                    const { data: authData, error: authError } = await db.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (authError) {
+                        // User-friendly messages without exposing raw server errors
+                        if (authError.message.includes('Invalid login credentials')) {
+                            throw new Error("Incorrect email or password. Please try again.");
+                        } else if (authError.message.includes('Email not confirmed')) {
+                            throw new Error("Please verify your email address with the 6-digit code.");
+                        } else {
+                            throw authError;
+                        }
+                    }
+
+                    const userId = authData.user?.id;
+                    if (!userId) throw new Error("Authentication failed. Please try again.");
+
+                    // 2. Query role from database
+                    await this.redirectByRole(userId);
+
+                } catch (err) {
+                    this.showError(err.message || "Invalid email or password.");
+                    btn.innerText = "Login to Dashboard";
+                    btn.disabled = false;
+                }
+            },
+
+      async redirectByRole(userId) {
+    const { data: profile, error } = await db
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+
+    const role = (profile && profile.role === 'admin') ? 'admin' : 'user';
+    localStorage.setItem('reflo_user_role', role); // 👈 ADD THIS LINE
+
+    if (role === 'admin') {
+        window.location.href = 'admin/dashboard.html';
+    } else {
+        window.location.href = 'app/dashboard.html';
+    }
+}
+        };
+
+        document.addEventListener('DOMContentLoaded', () => LoginApp.init());
+    </script>
+</body>
+</html>

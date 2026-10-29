@@ -1,0 +1,545 @@
+<!-- TITLE: public/success.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thank You | REFLO</title>
+
+    <!-- CLEAN URL MASKER: Hides "/public/success.html" from address bar -->
+    <script>
+        (function() {
+            if (window.location.pathname.indexOf('.html') !== -1) {
+                var cleanUrl = '/success' + window.location.search;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .public-success-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .public-success-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .success-main-container {
+            flex: 1;
+            padding: 30px 20px 60px;
+            max-width: 520px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .success-card-box {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 32px;
+            padding: 35px 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .status-icon-circle {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            font-size: 2.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* 4-5 Stars Icon Style */
+        .status-positive {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* 1-3 Stars Icon Style */
+        .status-consoling {
+            background: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+            border: 2px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            line-height: 1.25;
+        }
+
+        .success-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        /* HIGH-CONVERTING GOOGLE REVIEW CARD (4-5 Stars ONLY) */
+        .google-conversion-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(99, 102, 241, 0.12) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 24px;
+            padding: 24px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            animation: pulseGlow 2s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1); }
+            100% { box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25); }
+        }
+
+        .google-icon-badge {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .google-hook-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .google-hook-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .btn-google-power {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 900;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+            transition: transform 0.15s;
+            border: none;
+        }
+        .btn-google-power:active { transform: scale(0.97); }
+
+        .clipboard-pill-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            margin-top: 12px;
+        }
+
+        /* CONSOLING CUSTOMER RECOVERY CARD (1-3 Stars ONLY) */
+        .consoling-recovery-card {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
+            border-radius: 24px;
+            padding: 24px 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .consoling-recovery-card h3 {
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #d97706;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .consoling-recovery-card p {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .recovery-input-box {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .recovery-input-box:focus { border-color: #d97706; }
+
+        .btn-amicable-submit {
+            width: 100%;
+            padding: 14px;
+            background: #d97706 !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+            transition: transform 0.15s;
+        }
+        .btn-amicable-submit:active { transform: scale(0.98); }
+
+        /* Booking Voucher */
+        .voucher-box {
+            background: var(--bg-body);
+            border: 1.5px dashed var(--border);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 25px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+        .voucher-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+   .public-hub-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .voucher-row:last-child { border-bottom: none; }
+        .voucher-row span { color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+        .voucher-row strong { font-weight: 800; color: var(--text-main); }
+    </style>
+</head>
+<body class="public-success-wrapper">
+
+    <!-- HEADER -->
+    <header class="public-success-header">
+        <button type="button" class="brand-nav-btn" onclick="PublicSuccess.returnToHub()">
+            <span>◀ Hub</span>
+        </button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="../assets/images/reflo-icon.png" alt="REFLO" style="height: 22px; width: 22px; object-fit: contain;">
+            <span style="font-weight: 900; font-size: 0.9rem; color: var(--primary);">REFLO</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="success-main-container">
+        <section class="success-card-box">
+            
+            <!-- DYNAMIC STATUS ICON (✓ for Positive/Booking, 🤝 for 1-3 Stars) -->
+            <div class="status-icon-circle status-positive" id="statusIconBox">✓</div>
+            
+            <h1 class="success-title" id="successHeading">Thank You!</h1>
+            <p class="success-subtitle" id="successMessageText">Your submission has been received successfully.</p>
+
+            <!-- 1. 4-5 STARS ONLY: HIGH-CONVERTING GOOGLE REVIEW INVITATION -->
+            <div class="google-conversion-card" id="googleReviewSection" style="display: none;">
+                <span class="google-icon-badge">🌟</span>
+                <h3 class="google-hook-title">
+                    Let others know about your great experience!
+                </h3>
+                <p class="google-hook-desc">
+                    Your 5-star experience means everything to our business. Please help our community discover us by posting your review on <strong>Google Maps</strong> in just 1 tap.
+                </p>
+
+                <button type="button" class="btn-google-power" id="googleReviewBtn" onclick="PublicSuccess.handleGoogleRedirect()">
+                    <span>⭐ Post Review on Google Maps</span>
+                    <span>↗</span>
+                </button>
+
+                <div class="clipboard-pill-note" id="clipNote">
+                    <span>✨ Your review text has been copied to your clipboard ready to paste!</span>
+                </div>
+            </div>
+
+            <!-- 2. 1-3 STARS ONLY (IF THEY ALREADY PROVIDED PHONE): REASSURANCE MESSAGE -->
+            <div class="consoling-recovery-card" id="recoveryConfirmedSection" style="display: none;">
+                <h3><span>🤝</span> We Will Resolve This Amicably</h3>
+                <p>
+                    We sincerely regret that your experience wasn’t 5-star. We have forwarded your feedback and contact details directly to the business owner. 
+                    <br><br>
+                    <strong>The owner has been privately alerted and will reach out to you shortly to apologize and resolve this issue with you amicably.</strong>
+                </p>
+            </div>
+
+            <!-- 3. 1-3 STARS ONLY (IF ANONYMOUS OR MISSING PHONE): CONSOLING RECOVERY FORM -->
+            <div class="consoling-recovery-card" id="recoveryFollowupSection" style="display: none;">
+                <h3><span>🤝</span> Let Us Make Things Right</h3>
+                <p>
+                    We sincerely apologize that your visit fell short of expectations. Your satisfaction matters deeply to us. 
+                    <br><br>
+                    Please leave your phone number or WhatsApp below so the business owner can reach out to you directly to apologize and <strong>resolve this issue with you amicably</strong>.
+                </p>
+                
+                <form id="recoveryContactForm" onsubmit="PublicSuccess.handleRecoverySubmit(event)">
+                    <input type="text" id="recovNameInput" class="recovery-input-box" placeholder="Your Name">
+                    <input type="tel" id="recovPhoneInput" class="recovery-input-box" placeholder="Your Phone / WhatsApp *" required>
+                    <input type="email" id="recovEmailInput" class="recovery-input-box" placeholder="Your Email Address (Optional)">
+                    
+                    <button type="submit" class="btn-amicable-submit" id="recovSubmitBtn">
+                        Submit Contact Details to Owner 🤝
+                    </button>
+                </form>
+                
+                <div id="recoverySubmittedMsg" style="display: none; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; border-radius: 12px; padding: 12px; color: #16a34a; font-weight: 800; font-size: 0.85rem; margin-top: 10px;">
+                    ✓ Thank you. Your contact information has been sent to the owner. They will reach out to resolve this matter with you amicably.
+                </div>
+            </div>
+
+            <!-- 4. BOOKING CONFIRMATION VOUCHER -->
+            <div class="voucher-box" id="bookingVoucherSection" style="display: none;">
+                <div class="voucher-row">
+                    <span>Client Name</span>
+                    <strong id="vCustomerName">Valued Client</strong>
+                </div>
+                <div class="voucher-row">
+                    <span>Business</span>
+                    <strong id="vBizName">Sample Business</strong>
+                </div>
+                <div class="voucher-row">
+                    <span>Status</span>
+                    <strong style="color: #22c55e;">REQUEST RECEIVED ✓</strong>
+                </div>
+            </div>
+
+            <!-- RETURN ACTION -->
+            <button type="button" class="btn-primary" style="width: 100%; padding: 15px; border-radius: 14px;" onclick="PublicSuccess.returnToHub()">
+                Return to Customer Hub
+            </button>
+        </section>
+    </main>
+
+   <footer class="public-hub-footer">
+         <strong>REFLO</strong> Powered securely by <strong>HDC</strong>  • Feedback & Booking Platform
+    </footer>
+
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script>
+        const PublicSuccess = {
+            bizSlug: null,
+            feedbackId: null,
+            googleMapsUrl: null,
+            customerComment: '',
+
+            async init() {
+                const params = new URLSearchParams(window.location.search);
+                const type = params.get('type');
+                this.bizSlug = params.get('biz');
+                const rating = parseInt(params.get('rating') || '0', 10);
+                const customerName = params.get('name');
+                this.feedbackId = params.get('id');
+                this.customerComment = params.get('comment') || '';
+                const hasPhone = params.get('has_phone') === 'true';
+                const isAnon = params.get('anon') === 'true';
+
+                if (!this.bizSlug) {
+                    this.bizSlug = 'sample-business';
+                    return;
+                }
+
+                try {
+                    const { data: biz } = await db
+                        .from('businesses')
+                        .select('name, google_maps_url')
+                        .eq('slug', this.bizSlug)
+                        .maybeSingle();
+
+                    const bizName = biz?.name || 'our business';
+                    this.googleMapsUrl = biz?.google_maps_url || null;
+
+                    // 1. BOOKING CONFIRMATION FLOW
+                    if (type === 'booking') {
+                        document.getElementById('statusIconBox').innerText = '✓';
+                        document.getElementById('statusIconBox').className = 'status-icon-circle status-positive';
+                        document.getElementById('successHeading').innerText = 'Appointment Requested!';
+                        document.getElementById('successMessageText').innerText = `Thank you for scheduling with ${bizName}. The owner has received your request and will follow up shortly.`;
+                        
+                        document.getElementById('bookingVoucherSection').style.display = 'block';
+                        document.getElementById('vCustomerName').innerText = customerName || 'Valued Client';
+                        document.getElementById('vBizName').innerText = bizName;
+
+                    } else {
+                        // 2. FEEDBACK FLOW: RATING 4-5 STARS (HAPPY CUSTOMER)
+                        if (rating >= 4) {
+                            document.getElementById('statusIconBox').innerText = '✓';
+                            document.getElementById('statusIconBox').className = 'status-icon-circle status-positive';
+                            document.getElementById('successHeading').innerText = 'Thank You For Your Feedback!';
+                            document.getElementById('successMessageText').innerText = `We are delighted you had a great experience with ${bizName}!`;
+
+                            if (this.googleMapsUrl) {
+                                document.getElementById('googleReviewSection').style.display = 'block';
+                                
+                                // Auto-copy review text to clipboard
+                                if (this.customerComment) {
+                                    try {
+                                        if (navigator.clipboard && window.isSecureContext) {
+                                            await navigator.clipboard.writeText(this.customerComment);
+                                        }
+                                    } catch (_) {}
+                                }
+                            }
+                        } 
+                        // 3. FEEDBACK FLOW: RATING 1-3 STARS (UNHAPPY CUSTOMER - CONSOLE THEM)
+                        else if (rating > 0 && rating <= 3) {
+                            // Comforting handshake icon & sincere apology
+                            document.getElementById('statusIconBox').innerText = '🤝';
+                            document.getElementById('statusIconBox').className = 'status-icon-circle status-consoling';
+                            document.getElementById('successHeading').innerText = 'We Sincerely Apologize';
+                            document.getElementById('successMessageText').innerText = `We are truly sorry that your visit to ${bizName} fell below expectations.`;
+
+                            // GUARANTEE: Google review section is 100% hidden!
+                            document.getElementById('googleReviewSection').style.display = 'none';
+
+                            if (hasPhone && !isAnon) {
+                                // If they already left a phone number on the review form, reassure them
+                                document.getElementById('recoveryConfirmedSection').style.display = 'block';
+                            } else {
+                                // If anonymous or phone was missing, console them to leave contact details
+                                document.getElementById('recoveryFollowupSection').style.display = 'block';
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log("Success page notice:", err);
+                }
+            },
+
+            async handleGoogleRedirect() {
+                if (!this.googleMapsUrl) return;
+
+                // 1. Ensure comment text is on clipboard
+                if (this.customerComment) {
+                    try {
+                        if (navigator.clipboard && window.isSecureContext) {
+                            await navigator.clipboard.writeText(this.customerComment);
+                        }
+                    } catch (e) {
+                        console.log("Clipboard notice:", e);
+                    }
+                }
+
+                // 2. Track click on Google in database
+                if (this.feedbackId && this.feedbackId !== 'demo-id') {
+                    try {
+                        await db
+                            .from('feedback')
+                            .update({ 
+                                google_clicked: true, 
+                                updated_at: new Date() 
+                            })
+                            .eq('id', this.feedbackId);
+                    } catch (err) {
+                        console.warn("Could not record google click:", err);
+                    }
+                }
+
+                // 3. Open Google Maps
+                window.open(this.googleMapsUrl, '_blank');
+
+                const clipNote = document.getElementById('clipNote');
+                if (clipNote) {
+                    clipNote.innerText = '✓ Review copied! Tap "Paste" on Google Maps to submit.';
+                }
+            },
+
+            async handleRecoverySubmit(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('recovNameInput').value.trim();
+                const phone = document.getElementById('recovPhoneInput').value.trim();
+                const email = document.getElementById('recovEmailInput').value.trim();
+                const btn = document.getElementById('recovSubmitBtn');
+
+                btn.innerText = 'Submitting to Owner...';
+                btn.disabled = true;
+
+                try {
+                    if (this.feedbackId && this.feedbackId !== 'demo-id') {
+                        await db
+                            .from('feedback')
+                            .update({
+                                customer_name: name || undefined,
+                                customer_phone: phone,
+                                customer_email: email || undefined,
+                                updated_at: new Date()
+                            })
+                            .eq('id', this.feedbackId);
+                    }
+
+                    document.getElementById('recoveryContactForm').style.display = 'none';
+                    document.getElementById('recoverySubmittedMsg').style.display = 'block';
+                } catch (err) {
+                    alert("Error saving contact details.");
+                    btn.innerText = 'Submit Contact Details to Owner 🤝';
+                    btn.disabled = false;
+                }
+            },
+
+            returnToHub() {
+                const slug = encodeURIComponent(this.bizSlug || 'sample-business');
+                window.location.href = `/?biz=${slug}`;
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => PublicSuccess.init());
+    </script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!-- TITLE: app/onboarding.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Business Setup & Activation</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .onboarding-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-body);
+        }
+
+        .onboarding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .onboarding-container {
+            flex: 1;
+            padding: 30px 20px 80px;
+            max-width: 650px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Stepper Progress Bar */
+        .stepper-bar-wrap { margin-bottom: 25px; }
+
+        .stepper-progress-bg {
+            height: 6px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .stepper-progress-fill {
+            height: 100%;
+            width: 33%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .stepper-labels-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stepper-labels-row span.active { color: var(--primary); }
+
+        .onboard-step-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 30px;
+            padding: 35px 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .step-heading {
+            font-size: 1.45rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .step-subtext {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 520px) {
+            .form-row-2col {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        .input-group-item { margin-bottom: 16px; }
+
+        .input-group-item label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .onboard-input-box {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .onboard-input-box:focus { border-color: var(--primary); }
+
+        .verified-notice-banner {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1.5px solid rgba(34, 197, 94, 0.3);
+            color: #15803d;
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        [data-theme="dark"] .verified-notice-banner {
+            color: #4ade80;
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        /* WORKING HOURS SCHEDULE GRID */
+        .hours-schedule-box {
+            background: var(--bg-body);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .day-hour-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .day-label-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 120px;
+        }
+
+        .day-toggle-chk {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .day-name {
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        .time-pickers-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .time-box-input {
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.82rem;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .day-hour-row.closed-day { opacity: 0.45; }
+
+        /* LOGO UPLOAD & CAMERA BADGE STYLING */
+        .logo-field-wrapper {
+            position: relative;
+            width: 106px;
+            height: 106px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-upload-preview-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 26px;
+            border: 2.5px solid var(--primary);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s ease;
+        }
+        .logo-upload-preview-box:active { transform: scale(0.96); }
+
+        .logo-upload-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-avatar-camera {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: 3px solid var(--bg-card);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: transform 0.15s;
+            z-index: 10;
+        }
+        .btn-avatar-camera:active { transform: scale(0.88); }
+
+        .wizard-actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        /* FULLSCREEN DRAG & PINCH-ZOOM LIGHTBOX */
+        .zoom-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 15, 30, 0.94);
+            backdrop-filter: blur(14px);
+            z-index: 999999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            overflow: hidden;
+            user-select: none;
+        }
+        .zoom-modal-backdrop.active { display: flex; }
+
+        .zoom-close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: transform 0.15s, background 0.15s;
+        }
+        .zoom-close-btn:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.7); }
+
+        .zoom-hint-pill {
+            position: absolute;
+            bottom: 30px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 20px;
+            pointer-events: none;
+            letter-spacing: 0.3px;
+        }
+
+        .zoom-viewport {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .zoom-viewport:active { cursor: grabbing; }
+
+        .zoomable-img {
+            max-width: 85vw;
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55);
+            transform-origin: center center;
+            will-change: transform;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="onboarding-wrapper">
+
+    <!-- HEADER -->
+    <header class="onboarding-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="../assets/images/reflo-icon.png" alt="REFLO" style="height: 28px; width: 28px; object-fit: contain;">
+            <span style="font-weight: 900; color: var(--primary); font-size: 1.15rem; letter-spacing: -0.5px;">REFLO Setup</span>
+        </div>
+        <button onclick="RefloTheme.toggle()" style="background: var(--bg-body); border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="onboarding-container">
+        
+        <!-- STEPPER PROGRESS BAR -->
+        <div class="stepper-bar-wrap">
+            <div class="stepper-progress-bg">
+                <div class="stepper-progress-fill" id="stepperProgress"></div>
+            </div>
+            <div class="stepper-labels-row">
+                <span id="stepLabel1" class="active">1. Verification</span>
+                <span id="stepLabel2">2. Schedule & Hours</span>
+                <span id="stepLabel3">3. Branding</span>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             STEP 1: LOCATION VERIFICATION & CUSTOM CURRENCY
+        ========================================================= -->
+        <section class="onboard-step-card" id="step1Card">
+            <h1 class="step-heading">Verify Business Location</h1>
+            <p class="step-subtext">Connect your physical location to activate your 30-day Growth trial.</p>
+
+            <div class="verified-notice-banner" id="step1VerifiedNotice" style="display: none;">
+                <span>✓</span>
+                <span>Auto-filled from your registration. Location verified.</span>
+            </div>
+
+            <form id="step1Form" onsubmit="OnboardingApp.handleStep1(event)">
+                <div class="input-group-item">
+                    <label>Business Name *</label>
+                    <input type="text" id="obBizName" class="onboard-input-box" placeholder="e.g. Apex Dental Clinic" required>
+                </div>
+
+                <div class="input-group-item">
+                    <label>Google Business Profile / Map URL *</label>
+                    <input type="url" id="obGoogleUrl" class="onboard-input-box" placeholder="https://maps.google.com/..." required>
+                </div>
+
+                <div class="form-row-2col">
+                    <div class="input-group-item">
+                        <label>Business Category *</label>
+                        <select id="obCategory" class="onboard-input-box" required>
+                            <option value="Restaurant & Cafe">Restaurant & Cafe</option>
+                            <option value="Salon & Spa">Salon & Spa</option>
+                            <option value="Medical & Clinic">Medical & Clinic</option>
+                            <option value="Hotel & Hospitality">Hotel & Hospitality</option>
+                            <option value="Retail & Store">Retail & Store</option>
+                            <option value="Automotive & Repair">Automotive & Repair</option>
+                            <option value="Professional Services">Professional Services</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group-item">
+                        <label>Preferred Currency *</label>
+                        <select id="obCurrency" class="onboard-input-box" onchange="OnboardingApp.handleCurrencyChange(this.value)" required>
+                            <option value="USD">USD ($) — US Dollar</option>
+                            <option value="NGN">NGN (₦) — Nigerian Naira</option>
+                            <option value="GHS">GHS (GH₵) — Ghanaian Cedi</option>
+                            <option value="KES">KES (KSh) — Kenyan Shilling</option>
+                            <option value="ZAR">ZAR (R) — South African Rand</option>
+                            <option value="EUR">EUR (€) — Euro</option>
+                            <option value="GBP">GBP (£) — British Pound</option>
+                            <option value="AED">AED (DH) — UAE Dirham</option>
+                            <option value="OTHER">Other (Custom Currency)...</option>
+                        </select>
+
+                        <div id="customCurrencyWrap" style="display: none; margin-top: 8px;">
+                            <label style="font-size: 0.7rem; font-weight: 800; color: var(--primary);">ENTER 3-LETTER CODE (e.g. CAD, JPY, AUD, CFA) *</label>
+                            <input type="text" id="obCustomCurrency" class="onboard-input-box" placeholder="e.g. CAD" maxlength="6" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard-actions-row">
+                    <button type="submit" class="btn-primary" id="btnStep1Next" style="width: 100%; padding: 15px;">
+                        Continue to Schedule & Hours →
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- =========================================================
+             STEP 2: OPERATIONS, TIMEZONE & WORKING HOURS SCHEDULE
+        ========================================================= -->
+        <section class="onboard-step-card" id="step2Card" style="display: none;">
+            <h1 class="step-heading">Operations & Working Hours</h1>
+            <p class="step-subtext">Set your physical address, contact phone, and weekly opening schedule.</p>
+
+            <form id="step2Form" onsubmit="OnboardingApp.handleStep2(event)">
+                <div class="input-group-item">
+                    <label>Physical Address</label>
+                    <input type="text" id="obAddress" class="onboard-input-box" placeholder="Street Address, City, State">
+                </div>
+
+                <div class="form-row-2col">
+                    <div class="input-group-item">
+                        <label>Contact Phone / WhatsApp *</label>
+                        <input type="tel" id="obPhone" class="onboard-input-box" placeholder="+234 800 000 0000" required>
+                    </div>
+
+                    <div class="input-group-item">
+                        <label>Website URL (Optional)</label>
+                        <input type="url" id="obWebsite" class="onboard-input-box" placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <div class="form-row-2col">
+                    <div class="input-group-item">
+                        <label>Timezone</label>
+                        <select id="obTimezone" class="onboard-input-box">
+                            <option value="Africa/Lagos">Africa/Lagos (GMT+1)</option>
+                            <option value="Africa/Accra">Africa/Accra (GMT+0)</option>
+                            <option value="Africa/Nairobi">Africa/Nairobi (GMT+3)</option>
+                            <option value="Africa/Johannesburg">Africa/Johannesburg (GMT+2)</option>
+                            <option value="Europe/London">Europe/London (GMT+0)</option>
+                            <option value="America/New_York">America/New_York (EST)</option>
+                            <option value="UTC">UTC</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group-item" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                        <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 12px 14px; background: var(--bg-body); border: 1.5px solid var(--border); border-radius: 14px;">
+                            <span style="font-weight: 800; font-size: 0.8rem;">ENABLE ONLINE BOOKINGS</span>
+                            <input type="checkbox" id="obBookingToggle" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER MEDIA ATTACHMENT SETTINGS -->
+                <div id="obMediaSettingsCard" style="background: var(--bg-body); border: 1.5px solid var(--border); border-radius: 18px; padding: 18px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <div>
+                            <strong style="font-size: 0.88rem; display: block;">Customer File Uploads (Images / Video)</strong>
+                            <small style="color: var(--text-muted); font-size: 0.75rem;">Allow customers to attach photos or videos when booking an appointment</small>
+                        </div>
+                        <input type="checkbox" id="obAllowMediaToggle" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+                    </div>
+
+                    <div id="obMediaOptionsWrap" class="form-row-2col" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);">
+                        <div class="input-group-item" style="margin-bottom: 0;">
+                            <label>Upload Requirement</label>
+                            <select id="obMediaRequiredSelect" class="onboard-input-box">
+                                <option value="optional">Optional for Customer</option>
+                                <option value="compulsory">Compulsory / Required</option>
+                            </select>
+                        </div>
+                        <div class="input-group-item" style="margin-bottom: 0;">
+                            <label>Allowed Media Types</label>
+                            <select id="obMediaTypesSelect" class="onboard-input-box" onchange="OnboardingApp.validateMediaPlanSelection(this)">
+                                <option value="images_only">Images Only (PNG, JPG, WEBP)</option>
+                                <option value="images_and_videos">Images & Short Videos (Growth / Pro)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WORKING HOURS SCHEDULE -->
+                <div class="input-group-item" style="margin-top: 20px;">
+                    <label>Weekly Working / Operating Hours</label>
+                    <div class="hours-schedule-box" id="workingHoursContainer"></div>
+                </div>
+
+                <div class="wizard-actions-row">
+                    <button type="button" class="btn-outline" style="flex: 1; padding: 15px;" onclick="OnboardingApp.goToStep(1)">
+                        ← Back
+                    </button>
+                    <button type="submit" class="btn-primary" style="flex: 2; padding: 15px;">
+                        Continue to Branding →
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- =========================================================
+             STEP 3: BRANDING, LOGO INSPECTION & CAMERA UPLOAD
+        ========================================================= -->
+        <section class="onboard-step-card" id="step3Card" style="display: none;">
+            <h1 class="step-heading">Brand Identity</h1>
+            <p class="step-subtext">Upload your business logo. Tap the image to inspect & zoom; tap the camera icon to change it.</p>
+
+            <form id="step3Form" onsubmit="OnboardingApp.handleStep3(event)">
+                
+                <!-- LOGO FRAME WITH CAMERA ICON BUTTON -->
+                <div class="logo-field-wrapper">
+                    <!-- Tap image to inspect & drag-zoom -->
+                    <div class="logo-upload-preview-box" title="Tap to inspect & zoom in" onclick="OnboardingApp.openZoomModal()">
+                        <img id="obLogoPreview" src="../assets/images/default-business-logo.png" alt="Logo Preview">
+                    </div>
+                    <!-- Tap camera button to upload image -->
+                    <button type="button" class="btn-avatar-camera" title="Upload new image" onclick="document.getElementById('obLogoFile').click()">
+                        📷
+                    </button>
+                </div>
+
+                <input type="file" id="obLogoFile" hidden accept="image/*" onchange="OnboardingApp.previewLogo(this)">
+                
+                <p style="text-align: center; font-size: 0.78rem; color: var(--text-muted); font-weight: 700; margin-bottom: 25px;">
+                    Tap 📷 to pick image • Tap logo to zoom & verify details
+                </p>
+
+                <div class="input-group-item">
+                    <label>Short Description / Tagline</label>
+                    <textarea id="obDescription" class="onboard-input-box" rows="3" placeholder="Briefly describe your services to customers..."></textarea>
+                </div>
+
+                <div class="wizard-actions-row">
+                    <button type="button" class="btn-outline" style="flex: 1; padding: 15px;" onclick="OnboardingApp.goToStep(2)">
+                        ← Back
+                    </button>
+                    <button type="submit" class="btn-primary" id="btnFinishSetup" style="flex: 2; padding: 15px;">
+                        Launch Dashboard 🚀
+                    </button>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <!-- FULLSCREEN DRAGGABLE & PINCH-ZOOM LIGHTBOX MODAL -->
+    <div id="imageZoomModal" class="zoom-modal-backdrop">
+        <button type="button" class="zoom-close-btn" onclick="OnboardingApp.closeZoomModal()" title="Close">✕</button>
+        <div class="zoom-viewport" id="zoomViewport">
+            <img id="zoomTargetImg" class="zoomable-img" src="" alt="Enlarged Logo">
+        </div>
+        <div class="zoom-hint-pill">
+            ✋ Drag to pan • Pinch or Double-tap to zoom
+        </div>
+    </div>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/user/Onboarding.js"></script>
+    <script src="../assets/js/trial-gate.js"></script>
+</body>
+</html>

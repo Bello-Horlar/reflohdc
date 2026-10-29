@@ -1,0 +1,596 @@
+<!-- TITLE: app/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO | Account & Business Settings</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        .profile-page-container {
+            padding: 0 25px 100px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .profile-hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 30px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .profile-avatar-container {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar-wrap {
+            width: 85px;
+            height: 85px;
+            border-radius: 24px;
+            border: 3px solid var(--primary);
+            overflow: hidden;
+            background: var(--bg-body);
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s ease;
+        }
+        .profile-avatar-wrap:active { transform: scale(0.95); }
+
+        .profile-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-avatar-camera {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #2563eb !important;
+            color: #ffffff !important;
+            border: 2.5px solid var(--bg-card);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            transition: transform 0.15s;
+            z-index: 10;
+        }
+        .btn-avatar-camera:active { transform: scale(0.88); }
+
+        .profile-hero-info h2 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-hero-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        .input-group { margin-bottom: 16px; }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .form-input-box {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input-box:focus { border-color: var(--primary); }
+
+        .toggle-switch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .toggle-switch-row:last-child { border-bottom: none; }
+
+        .toggle-label-wrap strong { display: block; font-size: 0.9rem; font-weight: 800; }
+        .toggle-label-wrap small { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .api-locked-banner {
+            background: rgba(37, 99, 235, 0.06);
+            border: 1.5px dashed var(--border);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .api-key-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-body);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 4px 8px 4px 14px;
+        }
+
+        .api-key-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 0.88rem;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .zoom-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 15, 30, 0.94);
+            backdrop-filter: blur(14px);
+            z-index: 999999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            overflow: hidden;
+            user-select: none;
+        }
+        .zoom-modal-backdrop.active { display: flex; }
+
+        .zoom-close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: transform 0.15s, background 0.15s;
+        }
+        .zoom-close-btn:active { transform: scale(0.9); background: rgba(239, 68, 68, 0.7); }
+
+        .zoom-hint-pill {
+            position: absolute;
+            bottom: 30px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border-radius: 20px;
+            pointer-events: none;
+            letter-spacing: 0.3px;
+        }
+
+        .zoom-viewport {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: grab;
+        }
+        .zoom-viewport:active { cursor: grabbing; }
+
+        .zoomable-img {
+            max-width: 85vw;
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55);
+            transform-origin: center center;
+            will-change: transform;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <header class="master-header">
+        <button class="brand-nav-btn" onclick="location.href='dashboard.html'">
+            <span>❮ REFLO</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: none; border: 1px solid var(--border); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">🌓</button>
+    </header>
+
+    <main class="profile-page-container">
+        <div class="master-page-title" style="padding: 25px 0 15px;">
+            <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;">Account & Business Settings</h1>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Manage identity, booking rules, webhooks, and security</p>
+        </div>
+
+        <!-- 1. HERO IDENTITY CARD -->
+        <section class="profile-hero-card">
+            <div class="profile-avatar-container">
+                <div class="profile-avatar-wrap" title="Tap to inspect & zoom in" onclick="ProfileApp.openZoomModal()">
+                    <img id="bizLogoPreview" src="../assets/images/default-business-logo.png" alt="Business Logo">
+                </div>
+                <button type="button" class="btn-avatar-camera" title="Upload new logo" onclick="document.getElementById('logoFileInput').click()">
+                    📷
+                </button>
+            </div>
+            
+            <input type="file" id="logoFileInput" hidden accept="image/*" onchange="ProfileApp.handleLogoUpload(this)">
+            
+            <div class="profile-hero-info">
+                <h2 id="heroBizName">Loading Business...</h2>
+                <p id="heroOwnerName">Owner Profile</p>
+                <small id="heroBizSlug" style="color: var(--primary); font-weight: 800;">@slug</small>
+            </div>
+        </section>
+
+        <!-- 2. IDENTITY & PROFILE -->
+        <div class="section-label">1. Identity & Business Profile</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Owner Full Name</label>
+                    <input type="text" id="ownerNameInput" class="form-input-box" placeholder="Your full name" required>
+                </div>
+                <div class="input-group">
+                    <label>Account Email (Login)</label>
+                    <input type="email" id="ownerEmailInput" class="form-input-box" placeholder="name@business.com" disabled style="opacity: 0.7; cursor: not-allowed;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Business Name</label>
+                    <input type="text" id="bizNameInput" class="form-input-box" placeholder="Company Name" required>
+                </div>
+                <div class="input-group">
+                    <label>Business Category</label>
+                    <select id="bizCategoryInput" class="form-input-box">
+                        <option value="Restaurant & Cafe">Restaurant & Cafe</option>
+                        <option value="Salon & Spa">Salon & Spa</option>
+                        <option value="Medical & Clinic">Medical & Clinic</option>
+                        <option value="Hotel & Hospitality">Hotel & Hospitality</option>
+                        <option value="Retail & Shopping">Retail & Shopping</option>
+                        <option value="Automotive & Repair">Automotive & Repair</option>
+                        <option value="Professional Services">Professional Services</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Business Description</label>
+                <textarea id="bizDescInput" class="form-input-box" rows="3" placeholder="Briefly describe what your business offers to customers..."></textarea>
+            </div>
+        </div>
+
+        <!-- 3. LOCATION & ONLINE PRESENCE -->
+        <div class="section-label">2. Location & Online Presence</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div class="input-group">
+                <label>Physical Address / Location (Optional)</label>
+                <input type="text" id="bizAddressInput" class="form-input-box" placeholder="e.g. 14 Marina Road, Lagos, Nigeria">
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Business Phone / WhatsApp</label>
+                    <input type="tel" id="bizPhoneInput" class="form-input-box" placeholder="+234 800 000 0000">
+                </div>
+                <div class="input-group">
+                    <label>Website URL (Optional)</label>
+                    <input type="url" id="bizWebsiteInput" class="form-input-box" placeholder="https://yourbusiness.com">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Google Maps / Review Place URL</label>
+                <input type="url" id="googleMapsUrlInput" class="form-input-box" placeholder="https://maps.google.com/..." required>
+                <small style="color: var(--text-muted); font-size: 0.72rem; font-weight: 600; display: block; margin-top: 4px;">
+                    This link will be presented to positive reviewers to boost your public rating.
+                </small>
+            </div>
+        </div>
+
+        <!-- 4. BOOKING RULES -->
+        <div class="section-label">3. Booking Rules & Operations</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div class="toggle-switch-row">
+                <div class="toggle-label-wrap">
+                    <strong>Enable Online Booking</strong>
+                    <small>Allow customers to schedule visits from your Customer Hub</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="bookingEnabledToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="bookingSettingsSubSection" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Appointment Duration</label>
+                        <select id="bookingSlotDuration" class="form-input-box">
+                            <option value="15">15 Minutes</option>
+                            <option value="30" selected>30 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                            <option value="60">1 Hour</option>
+                            <option value="90">1.5 Hours</option>
+                            <option value="120">2 Hours</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Max Advance Booking</label>
+                        <select id="bookingMaxAdvance" class="form-input-box">
+                            <option value="7">7 Days ahead</option>
+                            <option value="14">14 Days ahead</option>
+                            <option value="30" selected>30 Days ahead</option>
+                            <option value="60">60 Days ahead</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border);">
+                    <div class="toggle-switch-row" style="border-bottom: none; padding: 0 0 12px 0;">
+                        <div class="toggle-label-wrap">
+                            <strong>Customer Media Uploads (Images / Video)</strong>
+                            <small>Allow customers to attach files with their booking</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="profileAllowMediaToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div id="profileMediaOptionsWrap" class="form-row" style="margin-top: 8px;">
+                        <div class="input-group">
+                            <label>Upload Requirement</label>
+                            <select id="profileMediaRequiredSelect" class="form-input-box">
+                                <option value="optional">Optional for Customer</option>
+                                <option value="compulsory">Compulsory / Required</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Allowed Types & Plan Rules</label>
+                            <select id="profileMediaTypesSelect" class="form-input-box" onchange="ProfileApp.validateMediaPlanSelection(this)">
+                                <option value="images_only">Images Only (Starter: 1, Growth: 5, Pro: Unlimited)</option>
+                                <option value="images_and_videos">Images & Videos (Growth / Pro Plan 🔒)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. NOTIFICATION PREFERENCES -->
+        <div class="section-label">4. Notification Preferences</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div class="toggle-switch-row" style="background: rgba(37, 99, 235, 0.05); border-radius: 14px; padding: 14px 12px; margin-bottom: 12px; border-bottom: none;">
+                <div class="toggle-label-wrap">
+                    <strong style="color: var(--primary);">📲 Instant Device Push & Vibration</strong>
+                    <small>Vibrate and pop up alerts even when app is closed</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifPushMasterToggle" onchange="RefloPush.togglePush(this)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-switch-row">
+                <div class="toggle-label-wrap">
+                    <strong>Urgent Low-Rating Alerts (1–3 Stars)</strong>
+                    <small>Immediate notification for customer recovery</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifLowRatingToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch-row">
+                <div class="toggle-label-wrap">
+                    <strong>New Booking Requests</strong>
+                    <small>Get notified as soon as an appointment is booked</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifNewBookingToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch-row">
+                <div class="toggle-label-wrap">
+                    <strong>Subscription & Renewal Warnings</strong>
+                    <small>Reminders for trial and subscription renewal</small>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifBillingToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 6. DEVELOPER API & WEBHOOK INTEGRATIONS (PRO ONLY) -->
+        <div class="section-label">5. Developer API & Webhook Integrations</div>
+        <div class="settings-card" style="margin-bottom: 25px;">
+            <div id="apiLockedView" class="api-locked-banner" style="display: none;">
+                <div style="font-size: 2rem; margin-bottom: 8px;">🔒</div>
+                <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 6px;">PRO Developer Integrations</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 440px; margin: 0 auto 16px; line-height: 1.45;">
+                    Connect REFLO to Zapier, Make.com, HubSpot, Google Sheets, or custom backend software via instant webhooks and REST API keys.
+                </p>
+                <button type="button" class="btn-primary" style="padding: 10px 22px; width: auto; font-size: 0.85rem;" onclick="location.href='subscription.html'">
+                    Upgrade to PRO Unlimited →
+                </button>
+            </div>
+
+            <div id="apiActiveView" style="display: none;">
+                <div class="input-group">
+                    <label>Secret API Key</label>
+                    <div class="api-key-box">
+                        <input type="password" id="apiSecretKeyInput" class="api-key-input" readonly placeholder="Click Generate to create key">
+                        <button type="button" class="btn-outline" style="padding: 6px 10px; font-size: 0.75rem;" onclick="ProfileApp.toggleApiKeyVisibility(this)">👁️ Show</button>
+                        <button type="button" class="btn-outline" style="padding: 6px 10px; font-size: 0.75rem;" onclick="ProfileApp.copyApiKey()">📋 Copy</button>
+                        <button type="button" class="btn-outline" style="padding: 6px 10px; font-size: 0.75rem;" onclick="ProfileApp.generateApiKey()">🔄 Generate</button>
+                    </div>
+                    <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">
+                        Keep your secret key private. Use it in the <code>Authorization: Bearer</code> header for custom software calls.
+                    </small>
+                </div>
+
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border);">
+                    <div class="toggle-switch-row" style="border-bottom: none; padding: 0 0 10px 0;">
+                        <div class="toggle-label-wrap">
+                            <strong>Live Outgoing Webhooks</strong>
+                            <small>Trigger instant HTTP POST events to Zapier, Make, or custom URLs</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="webhookEnabledToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 8px;">
+                        <label>Endpoint URL (HTTPS)</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="url" id="webhookUrlInput" class="form-input-box" placeholder="https://hooks.zapier.com/hooks/catch/..." style="flex: 1;">
+                            <button type="button" class="btn-outline" style="padding: 12px 16px; white-space: nowrap; font-size: 0.8rem;" onclick="ProfileApp.testWebhook()">
+                                🚀 Test Webhook
+                            </button>
+                        </div>
+                        <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">
+                            REFLO sends JSON events for <code>feedback.created</code> and <code>bookings.created</code> immediately.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. SECURITY & PASSWORD -->
+        <div class="section-label">6. Security & Password</div>
+        <div class="settings-card" style="margin-bottom: 30px;">
+            <div class="form-row">
+                <div class="input-group">
+                    <label>New Password</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="newPasswordInput" class="form-input-box" placeholder="Min. 8 characters" minlength="8" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pwd" onclick="ProfileApp.togglePasswordVisibility('newPasswordInput', this)" title="Show/Hide">👁️</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="confirmPasswordInput" class="form-input-box" placeholder="Repeat new password" minlength="8" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pwd" onclick="ProfileApp.togglePasswordVisibility('confirmPasswordInput', this)" title="Show/Hide">👁️</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-outline" style="width: auto; padding: 12px 24px;" onclick="ProfileApp.updatePassword()">
+                Update Password
+            </button>
+        </div>
+
+        <!-- SAVE ALL BUTTON -->
+        <button type="button" class="btn-primary" id="saveProfileBtn" style="margin-bottom: 30px;" onclick="ProfileApp.saveAllProfileData()">
+            Save All Changes
+        </button>
+
+        <!-- QUICK NAV UTILITY CARD -->
+        <div class="section-label" style="margin-top: 20px;">Quick Navigation</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏠</i><span>Home</span></a>
+                <a href="feedback.html" class="nav-shortcut"><i>⭐</i><span>Reviews</span></a>
+                <a href="bookings.html" class="nav-shortcut"><i>📅</i><span>Bookings</span></a>
+                <a href="subscription.html" class="nav-shortcut"><i>💳</i><span>Plans</span></a>
+                <a href="share.html" class="nav-shortcut"><i>🔳</i><span>QR Hub</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+            </div>
+        </div>
+    </main>
+
+    <!-- FULLSCREEN DRAGGABLE & PINCH-ZOOM LIGHTBOX MODAL -->
+    <div id="imageZoomModal" class="zoom-modal-backdrop">
+        <button type="button" class="zoom-close-btn" onclick="ProfileApp.closeZoomModal()" title="Close">✕</button>
+        <div class="zoom-viewport" id="zoomViewport">
+            <img id="zoomTargetImg" class="zoomable-img" src="" alt="Enlarged Logo">
+        </div>
+        <div class="zoom-hint-pill">
+            ✋ Drag to pan • Pinch or Double-tap to zoom
+        </div>
+    </div>
+
+    <p class="reflo-powered-tag">
+        <em>REFLO powered by HDC</em>
+    </p>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/user/Profile.js"></script>
+    <script src="../assets/js/trial-gate.js"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!-- TITLE: admin/businesses.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REFLO MASTER | Business Accounts Directory</title>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <style>
+        :root {
+            --adm-primary: #6366f1;
+            --adm-primary-hover: #4f46e5;
+            --adm-gradient: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        }
+
+        .admin-master-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: #0f172a;
+            color: #ffffff;
+            border-bottom: 1px solid #1e293b;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-nav-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 900;
+            cursor: pointer;
+            letter-spacing: -0.5px;
+        }
+
+        .admin-directory-container {
+            padding: 0 20px 100px;
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        .admin-hero-card {
+            background: var(--adm-gradient);
+            color: #ffffff;
+            border-radius: 28px;
+            padding: 24px 28px;
+            margin: 20px 0 25px;
+            box-shadow: 0 12px 30px rgba(67, 56, 202, 0.25);
+        }
+
+        .admin-hero-card h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; margin: 0 0 6px; }
+        .admin-hero-card p { font-size: 0.85rem; opacity: 0.85; margin: 0; }
+
+        .search-input-wrap { margin-bottom: 14px; }
+        .search-input-box {
+            width: 100%; padding: 14px 18px; border-radius: 16px;
+            border: 1.5px solid var(--border); background: var(--bg-card);
+            color: var(--text-main); font-size: 0.95rem; font-weight: 600; outline: none;
+            box-shadow: var(--shadow);
+        }
+        .search-input-box:focus { border-color: var(--adm-primary); }
+
+        .filter-scroll-row {
+            display: flex; gap: 8px; overflow-x: auto;
+            padding-bottom: 12px; margin-bottom: 20px; scrollbar-width: none;
+        }
+        .filter-scroll-row::-webkit-scrollbar { display: none; }
+
+        .adm-filter-pill {
+            padding: 8px 16px; border-radius: 18px; border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text-main); font-size: 0.75rem;
+            font-weight: 800; white-space: nowrap; cursor: pointer; transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .adm-filter-pill.active {
+            background: var(--adm-primary); color: #ffffff !important;
+            border-color: var(--adm-primary); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .biz-directory-card {
+            background: var(--bg-card); border: 1.5px solid var(--border);
+            border-radius: 24px; padding: 22px; margin-bottom: 16px;
+            box-shadow: var(--shadow); transition: transform 0.15s;
+        }
+        .biz-directory-card.status-suspended-border { border-left: 5px solid #ef4444; }
+
+        .biz-top-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 15px; margin-bottom: 14px;
+        }
+        .biz-identity-wrap { display: flex; align-items: center; gap: 14px; }
+        .biz-avatar-thumb {
+            width: 52px; height: 52px; border-radius: 16px; border: 2px solid var(--border);
+            background: var(--bg-body); overflow: hidden; flex-shrink: 0;
+        }
+        .biz-avatar-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .biz-name-text { font-size: 1.15rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 2px; }
+        .biz-owner-text { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; }
+
+        .biz-details-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            background: var(--bg-body); border: 1px solid var(--border);
+            border-radius: 16px; padding: 14px; margin-bottom: 16px;
+        }
+        @media (max-width: 700px) { .biz-details-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .biz-detail-item small { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+        .biz-detail-item strong { font-size: 0.85rem; font-weight: 800; }
+
+        .badge-status { padding: 5px 12px; border-radius: 12px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-trial { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+        .badge-starter { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-growth { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+        .badge-pro { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+        .badge-expired { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-suspended { background: rgba(220, 38, 38, 0.25); color: #dc2626; }
+
+        .biz-actions-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .btn-biz-action {
+            padding: 8px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 800;
+            cursor: pointer; border: 1px solid var(--border); background: var(--bg-card);
+            color: var(--text-main); transition: all 0.15s ease;
+        }
+        .btn-biz-action:active { transform: scale(0.95); }
+        .btn-action-activate { background: #22c55e !important; color: #ffffff !important; border: none; }
+        .btn-action-suspend { color: #ef4444; border-color: rgba(239, 68, 68, 0.35); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: var(--bg-card); width: 100%; max-width: 520px;
+            border-radius: 28px; padding: 30px 25px; box-shadow: var(--shadow);
+            border: 1px solid var(--border); max-height: 90vh; overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+
+    <header class="admin-master-header">
+        <button class="admin-nav-btn" onclick="location.href='dashboard.html'">
+            <span>◀ REFLO MASTER</span>
+        </button>
+        <button onclick="RefloTheme.toggle()" style="background: #1e293b; border: 1px solid #334155; padding: 10px; border-radius: 50%; cursor: pointer; color: white; font-size: 1.1rem;">🌓</button>
+    </header>
+
+    <main class="admin-directory-container">
+        <section class="admin-hero-card">
+            <h1>Commercial Accounts Directory</h1>
+            <p>Inspect registered businesses, audit subscription entitlements, grant trial extensions, and enforce access suspension.</p>
+        </section>
+
+        <div class="search-input-wrap">
+            <input type="text" id="bizSearchInput" class="search-input-box" placeholder="Search by business name, owner email, handle (@slug), or phone..." oninput="AdminBusinesses.handleSearch(this.value)">
+        </div>
+
+        <div class="filter-scroll-row">
+            <button class="adm-filter-pill active" data-filter="all" onclick="AdminBusinesses.setFilter('all', this)">All Businesses</button>
+            <button class="adm-filter-pill" data-filter="active" onclick="AdminBusinesses.setFilter('active', this)">Paid Active 🟢</button>
+            <button class="adm-filter-pill" data-filter="trial" onclick="AdminBusinesses.setFilter('trial', this)">Growth Trial ⏳</button>
+            <button class="adm-filter-pill" data-filter="expired" onclick="AdminBusinesses.setFilter('expired', this)">Expired ⚠️</button>
+            <button class="adm-filter-pill" data-filter="suspended" onclick="AdminBusinesses.setFilter('suspended', this)">Suspended 🚫</button>
+        </div>
+
+        <!-- DIRECTORY CONTROLS & HIDE/UNHIDE BUTTON -->
+        <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <span id="bizCountLabel" style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);">
+                Showing 0 businesses
+            </span>
+            <button type="button" class="btn-biz-action" id="toggleBizFeedBtn" onclick="AdminBusinesses.toggleFeed()">
+                👁️ Hide Directory
+            </button>
+        </div>
+
+        <div id="businessesFeedList">
+            <div class="skeleton-item-long" style="height: 160px; border-radius: 24px; margin-bottom: 16px;"></div>
+            <div class="skeleton-item-long" style="height: 160px; border-radius: 24px;"></div>
+        </div>
+
+        <div class="section-label" style="margin-top: 40px;">Admin Gateway</div>
+        <div class="settings-card nav-utility-card">
+            <div class="nav-grid-3">
+                <a href="dashboard.html" class="nav-shortcut"><i>🏢</i><span>Master</span></a>
+                <a href="support.html" class="nav-shortcut"><i>📩</i><span>Support</span></a>
+                <a href="settings.html" class="nav-shortcut"><i>⚙️</i><span>Pricing</span></a>
+                <a href="activity.html" class="nav-shortcut"><i>📜</i><span>Logs</span></a>
+                <a href="../app/dashboard.html" class="nav-shortcut"><i>👤</i><span>User App</span></a>
+                <a href="../login.html" class="nav-shortcut"><i>🚪</i><span>Sign Out</span></a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 1. VIEW BUSINESS DOSSIER MODAL -->
+    <div class="modal-overlay" id="viewDossierModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <div>
+                    <h2 id="modalBizName" style="font-size: 1.3rem; font-weight: 900; margin: 0;">Business Name</h2>
+                    <small id="modalBizSlug" style="color: var(--adm-primary); font-weight: 800;">@slug</small>
+                </div>
+                <button type="button" class="btn-outline" style="padding: 4px 10px; font-size: 0.75rem;" onclick="AdminBusinesses.closeModals()">✕</button>
+            </div>
+
+            <div class="settings-card" style="margin-bottom: 15px; padding: 15px;">
+                <div style="font-size: 0.85rem; line-height: 1.6;">
+                    <div>👤 <strong>Owner:</strong> <span id="modalOwnerName">--</span> (<span id="modalOwnerEmail">--</span>)</div>
+                    <div>📍 <strong>Address:</strong> <span id="modalAddress">--</span></div>
+                    <div>📞 <strong>Phone:</strong> <span id="modalPhone">--</span></div>
+                    <div>🌐 <strong>Website:</strong> <span id="modalWebsite">--</span></div>
+                    <div>🗺️ <strong>Google Maps Link:</strong> <a id="modalGoogleLink" href="#" target="_blank" style="color:var(--adm-primary); word-break:break-all;">Open Place URL</a></div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <a id="modalPublicHubLink" href="#" target="_blank" class="btn-primary" style="flex: 1; text-align: center; text-decoration: none; padding: 12px; font-size: 0.85rem;">
+                    🔗 Open Public Customer Hub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. REVIEW SUBSCRIPTION MODAL -->
+    <div class="modal-overlay" id="reviewSubModal">
+        <div class="modal-box">
+            <h2 style="font-size: 1.3rem; font-weight: 900; margin-bottom: 4px;">Review & Adjust Subscription</h2>
+            <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 20px;" id="reviewSubBizTitle">Adjusting plan entitlements</p>
+
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                    ASSIGN PLAN TIER
+                </label>
+                <select id="subPlanSelect" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 800;">
+                    <option value="starter">Starter Plan ($19/mo)</option>
+                    <option value="growth">Growth Plan ($39/mo)</option>
+                    <option value="pro">PRO Unlimited ($79/mo)</option>
+                    <option value="trial">Growth Free Trial</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">
+                    EXPIRATION / TRIAL END DATE
+                </label>
+                <input type="date" id="subExpiryDateInput" class="form-input-box" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 800;" required>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-outline" style="flex: 1; padding: 12px;" onclick="AdminBusinesses.closeModals()">Cancel</button>
+                <button type="button" class="btn-primary" style="flex: 2; padding: 12px;" onclick="AdminBusinesses.saveSubscriptionReview()">Save Entitlements</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPENDENCIES -->
+    <script src="../assets/js/network-listener.js"></script>
+    <script src="../assets/js/security.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/admin/Businesses.js"></script>
+</body>
+</html>
